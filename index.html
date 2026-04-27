@@ -1173,11 +1173,7 @@ function removeLease(id){const t=tenants.find(x=>x.id===id);t.leaseFile=null;sav
 function viewLeaseFromList(id){
   const t=tenants.find(x=>x.id===id);
   if(!t||!t.leaseFile)return;
-  const w=window.open();
-  if(t.leaseFile.type==='application/pdf')
-    w.document.write(`<iframe src="${t.leaseFile.data}" style="width:100%;height:100%;border:none;"></iframe>`);
-  else
-    w.document.write(`<img src="${t.leaseFile.data}" style="max-width:100%;" />`);
+  openLeaseFile(t.leaseFile);
 }
 function openMaintModal(tid){
   document.getElementById('maint-tid').value=tid;
@@ -1192,6 +1188,36 @@ function saveMaint(){
   closeModal('maint');saveAll();openProfile(id);
 }
 
+
+function openLeaseFile(leaseFile){
+  try{
+    // Convert base64 data URI to a Blob then create an object URL — works in Safari
+    const dataURI=leaseFile.data;
+    const byteString=atob(dataURI.split(',')[1]);
+    const mimeType=leaseFile.type||'application/pdf';
+    const ab=new ArrayBuffer(byteString.length);
+    const ia=new Uint8Array(ab);
+    for(let i=0;i<byteString.length;i++) ia[i]=byteString.charCodeAt(i);
+    const blob=new Blob([ab],{type:mimeType});
+    const url=URL.createObjectURL(blob);
+    // On Safari/iOS, navigate current tab to file (window.open is blocked)
+    // Use a temporary <a> tag with download fallback
+    const a=document.createElement('a');
+    a.href=url;
+    a.target='_blank';
+    a.rel='noopener noreferrer';
+    // Try opening in new tab first
+    const opened=window.open(url,'_blank');
+    if(!opened){
+      // Fallback: navigate current tab
+      window.location.href=url;
+    }
+    // Clean up object URL after a delay
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){
+    alert('Could not open file. Try downloading it instead: '+leaseFile.name);
+  }
+}
 // ══ SERVICE WORKER (for PWA install) ══
 if('serviceWorker' in navigator){
   const sw=`self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline',{headers:{'Content-Type':'text/plain'}}))));`;
