@@ -29,11 +29,11 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; background: var(--navy); color: var(--text); }
-
+ 
 /* ── SCREENS ── */
 .screen { display: none; height: 100%; }
 .screen.active { display: flex; flex-direction: column; }
-
+ 
 /* ── LOGIN ── */
 #login-screen { background: var(--navy); align-items: center; justify-content: center; padding: 2rem; }
 .login-box { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 2rem; width: 100%; max-width: 360px; }
@@ -47,7 +47,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .login-btn { width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
 .login-error { color: #ff7070; font-size: 13px; text-align: center; margin-top: 8px; display: none; }
 .login-hint { color: rgba(255,255,255,0.3); font-size: 11px; text-align: center; margin-top: 12px; }
-
+ 
 /* ── APP LAYOUT ── */
 #app-screen { background: var(--light); }
 .app-header { background: var(--navy); padding: calc(var(--safe-top) + 12px) 16px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
@@ -57,7 +57,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .app-acct { color: rgba(255,255,255,0.55); font-size: 11px; }
 .header-btns { display: flex; gap: 8px; }
 .hbtn { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
-
+ 
 /* ── BOTTOM NAV ── */
 .bottom-nav { background: var(--navy); padding: 8px 0 calc(var(--safe-bot) + 8px); display: flex; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.08); }
 .bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; }
@@ -65,12 +65,12 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .bnav-label { color: rgba(255,255,255,0.4); font-size: 10px; font-weight: 500; transition: color 0.15s; }
 .bnav-item.active .bnav-icon { opacity: 1; }
 .bnav-item.active .bnav-label { color: var(--teal2); }
-
+ 
 /* ── PAGE CONTENT ── */
 .pages { flex: 1; overflow: hidden; position: relative; }
 .page { display: none; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; }
 .page.active { display: block; }
-
+ 
 /* ── CARDS & METRICS ── */
 .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .metric-card { background: var(--card); border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -79,7 +79,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .metric-value.ok { color: var(--success); }
 .metric-value.warn { color: var(--warn); }
 .metric-value.danger { color: var(--danger); }
-
+ 
 .card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
 .card-sub { font-size: 12px; color: var(--text2); }
@@ -87,13 +87,13 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .card-row:last-child { border-bottom: none; padding-bottom: 0; }
 .card-row-left { flex: 1; min-width: 0; }
 .card-row-right { flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; gap: 6px; }
-
+ 
 /* ── ALERTS ── */
 .alert { padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-bottom: 8px; border-left: 3px solid; }
 .alert-warn { background: #FFFBEB; border-color: var(--warn); color: #92400E; }
 .alert-danger { background: #FEF2F2; border-color: var(--danger); color: #991B1B; }
 .alert-info { background: #EFF6FF; border-color: #3B82F6; color: #1E40AF; }
-
+ 
 /* ── BADGES ── */
 .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .badge-paid { background: #D1FAE5; color: #065F46; }
@@ -105,7 +105,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .badge-expired { background: #FEE2E2; color: #991B1B; }
 .badge-vacant { background: #F3F4F6; color: #4B5563; }
 .badge-deposit { background: #D1FAE5; color: #065F46; }
-
+ 
 /* ── BUTTONS ── */
 .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; padding: 8px 14px; transition: opacity 0.15s; }
 .btn:active { opacity: 0.75; }
@@ -114,20 +114,20 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .btn-danger { background: #FEE2E2; color: #991B1B; }
 .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
 .btn-full { width: 100%; padding: 14px; font-size: 15px; border-radius: 12px; }
-
+ 
 /* ── FAB ── */
 .fab { position: fixed; bottom: calc(var(--safe-bot) + 72px); right: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--teal); border: none; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(13,140,122,0.45); cursor: pointer; z-index: 50; transition: transform 0.15s; }
 .fab:active { transform: scale(0.92); }
-
+ 
 /* ── SECTION HEADERS ── */
 .section-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .section-hdr h2 { font-size: 17px; font-weight: 700; color: var(--text); }
-
+ 
 /* ── SEARCH ── */
 .search-wrap { position: relative; margin-bottom: 12px; }
 .search-wrap input { width: 100%; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 36px; font-size: 15px; color: var(--text); outline: none; }
 .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 16px; pointer-events: none; }
-
+ 
 /* ── FORMS / MODALS ── */
 .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; }
 .modal-backdrop.open { display: flex; }
@@ -144,7 +144,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .form-row textarea { resize: vertical; min-height: 80px; }
 .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .form-error { color: var(--danger); font-size: 12px; margin-top: 6px; display: none; }
-
+ 
 /* ── PROFILE TABS ── */
 .ptab-bar { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; scrollbar-width: none; }
 .ptab-bar::-webkit-scrollbar { display: none; }
@@ -152,13 +152,13 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .ptab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
 .psection { display: none; }
 .psection.active { display: block; }
-
+ 
 /* ── KV TABLE ── */
 .kv-row { display: flex; padding: 9px 0; border-bottom: 1px solid var(--border); }
 .kv-row:last-child { border-bottom: none; }
 .kv-key { color: var(--text2); font-size: 13px; width: 130px; flex-shrink: 0; }
 .kv-val { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
-
+ 
 /* ── TOGGLE ── */
 .toggle-wrap { display: flex; align-items: center; gap: 10px; }
 .ios-toggle { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
@@ -167,13 +167,13 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .ios-slider:before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 .ios-toggle input:checked + .ios-slider { background: var(--teal); }
 .ios-toggle input:checked + .ios-slider:before { transform: translateX(18px); }
-
+ 
 /* ── CONTRACTOR CHIPS ── */
 .cat-chips { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 2px; scrollbar-width: none; }
 .cat-chips::-webkit-scrollbar { display: none; }
 .cat-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--card); color: var(--text2); border: 1.5px solid var(--border); flex-shrink: 0; }
 .cat-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-
+ 
 /* ── MAINT CARD ── */
 .maint-card { background: var(--light); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
 .maint-card-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
@@ -181,68 +181,68 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .maint-card-date { font-size: 11px; color: var(--text2); }
 .maint-card-desc { font-size: 12px; color: var(--text2); margin-top: 3px; }
 .maint-card-cost { font-size: 12px; color: var(--danger); font-weight: 600; margin-top: 3px; }
-
+ 
 /* ── DAY PILL ── */
 .day-pill { display: inline-block; border-radius: 20px; padding: 3px 8px; font-size: 12px; font-weight: 700; }
 .day-pill-red { background: #FEE2E2; color: #991B1B; }
 .day-pill-yellow { background: #FEF3C7; color: #92400E; }
 .day-pill-green { background: #D1FAE5; color: #065F46; }
-
+ 
 /* ── PAYMENT BTNS ── */
 .pay-btn-zelle { background: #6D1ED4; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; width: 100%; cursor: pointer; margin-bottom: 10px; }
 .pay-btn-apple { background: #1D1D1F; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; width: 100%; cursor: pointer; margin-bottom: 10px; }
-
+ 
 /* ── EMPTY STATE ── */
 .empty { text-align: center; padding: 2.5rem 1rem; color: var(--text2); }
 .empty-icon { font-size: 40px; margin-bottom: 10px; }
 .empty-text { font-size: 14px; }
-
+ 
 /* ── REMINDER ITEM ── */
 .reminder-card { border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; }
 .reminder-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
 .reminder-msg { color: var(--text); margin-bottom: 2px; }
 .reminder-meta { font-size: 11px; color: var(--text2); }
-
+ 
 /* ── UPLOAD AREA ── */
 .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; color: var(--text2); font-size: 14px; }
 .upload-area:active { background: var(--light); }
 .lease-file-card { background: var(--light); border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .lease-file-name { font-size: 13px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
+ 
 /* ── ADMIN LIST ── */
 .admin-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .admin-row:last-child { border-bottom: none; }
 .admin-name { font-size: 14px; font-weight: 700; }
 .admin-user { font-size: 12px; color: var(--text2); }
-
+ 
 /* ── ACCOUNT PILL ── */
 .acct-pill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
 .acct-pill-name { color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .acct-pill-arrow { color: rgba(255,255,255,0.5); font-size: 10px; }
-
+ 
 /* ── SECTION LABEL ── */
 .section-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin: 14px 0 8px; }
-
+ 
 /* ── CHECKLIST ROW ── */
 .check-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 14px; }
 .check-row input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--teal); cursor: pointer; }
-
+ 
 /* ── BACK BTN ── */
 .back-btn { display: flex; align-items: center; gap: 6px; color: var(--teal); font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; background: none; border: none; padding: 0; }
-
+ 
 /* ── EXPENSE TABLE ── */
 .exp-row { display: flex; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 8px; }
 .exp-row:last-child { border-bottom: none; }
 .exp-date { font-size: 11px; color: var(--text2); width: 68px; flex-shrink: 0; }
 .exp-type { font-size: 12px; font-weight: 600; flex: 1; }
 .exp-cost { font-size: 13px; font-weight: 700; color: var(--danger); flex-shrink: 0; }
-
+ 
 /* scrollbar */
 ::-webkit-scrollbar { width: 0; height: 0; }
 </style>
 </head>
 <body>
-
+ 
 <!-- ══════════════ LOGIN SCREEN ══════════════ -->
 <div class="screen active" id="login-screen">
   <div class="login-box">
@@ -260,7 +260,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     <div class="login-error" id="li-err">Invalid username or password.</div>
     <button class="login-btn" onclick="doLogin()">Sign In</button>
     <div class="login-hint">Default: admin / admin123</div>
-
+ 
     <div style="margin-top:20px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3);border-radius:12px;padding:14px;">
       <div style="color:#00D4AA;font-size:13px;font-weight:700;margin-bottom:6px;">📲 Install as an app on your iPhone</div>
       <div style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.6;">
@@ -272,7 +272,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
         📍 Show me where the Share button is
       </button>
     </div>
-
+ 
     <!-- Install help overlay -->
     <div id="install-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;padding:20px;display:none;flex-direction:column;align-items:center;justify-content:flex-end;">
       <div style="background:#1a2a3a;border-radius:20px;padding:24px;width:100%;max-width:380px;margin-bottom:60px;">
@@ -299,7 +299,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- ══════════════ APP SCREEN ══════════════ -->
 <div class="screen" id="app-screen">
   <div class="app-header">
@@ -315,7 +315,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
       <button class="hbtn" onclick="doLogout()">Out</button>
     </div>
   </div>
-
+ 
   <div class="pages">
     <!-- DASHBOARD -->
     <div class="page active" id="page-dash">
@@ -324,20 +324,20 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
       <div class="section-label">Recent activity</div>
       <div id="dash-activity"></div>
     </div>
-
+ 
     <!-- UNITS -->
     <div class="page" id="page-units">
       <div class="section-hdr"><h2>Units</h2><button class="btn btn-primary btn-sm" onclick="openModal('unit')">+ Unit</button></div>
       <div id="units-list"></div>
     </div>
-
+ 
     <!-- TENANTS -->
     <div class="page" id="page-tenants">
       <div class="section-hdr"><h2>Tenants</h2><button class="btn btn-primary btn-sm" onclick="openModal('tenant')">+ Tenant</button></div>
       <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" placeholder="Search tenants..." oninput="filterTenants(this.value)" /></div>
       <div id="tenants-list"></div>
     </div>
-
+ 
     <!-- RENT -->
     <div class="page" id="page-rent">
       <div class="section-hdr">
@@ -347,20 +347,20 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
       <div class="metrics-grid" id="rent-metrics"></div>
       <div id="rent-list"></div>
     </div>
-
+ 
     <!-- LEASES -->
     <div class="page" id="page-leases">
       <div class="section-hdr"><h2>Leases</h2><button class="btn btn-primary btn-sm" onclick="openModal('lease')">+ Lease</button></div>
       <div id="leases-list"></div>
     </div>
-
+ 
     <!-- CONTRACTORS -->
     <div class="page" id="page-contractors">
       <div class="section-hdr"><h2>Contractors</h2><button class="btn btn-primary btn-sm" onclick="openModal('contractor')">+ Add</button></div>
       <div class="cat-chips" id="cat-chips"></div>
       <div id="contractors-list"></div>
     </div>
-
+ 
     <!-- MORE (reminders / admins / settings) -->
     <div class="page" id="page-more">
       <div class="section-label">Reminders</div>
@@ -388,11 +388,11 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
         <div id="settings-saved" style="color:var(--success);font-size:13px;text-align:center;margin-top:8px;display:none;">✓ Saved</div>
       </div>
     </div>
-
+ 
     <!-- PROFILE (injected dynamically) -->
     <div class="page" id="page-profile"></div>
   </div>
-
+ 
   <!-- Bottom nav -->
   <div class="bottom-nav">
     <div class="bnav-item active" onclick="showPage('dash',this)"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
@@ -404,7 +404,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     <div class="bnav-item" onclick="showPage('more',this)"><div class="bnav-icon">⚙️</div><div class="bnav-label">More</div></div>
   </div>
 </div>
-
+ 
 <!-- ══════════════ MODALS ══════════════ -->
 <!-- ACCOUNT SWITCHER -->
 <div class="modal-backdrop" id="modal-account-switcher">
@@ -417,7 +417,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- NEW ACCOUNT -->
 <div class="modal-backdrop" id="modal-account">
   <div class="modal-sheet">
@@ -430,7 +430,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- UNIT MODAL -->
 <div class="modal-backdrop" id="modal-unit">
   <div class="modal-sheet">
@@ -443,7 +443,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- TENANT MODAL -->
 <div class="modal-backdrop" id="modal-tenant">
   <div class="modal-sheet">
@@ -475,7 +475,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- LEASE MODAL -->
 <div class="modal-backdrop" id="modal-lease">
   <div class="modal-sheet">
@@ -491,7 +491,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- PAYMENT MODAL -->
 <div class="modal-backdrop" id="modal-payment">
   <div class="modal-sheet">
@@ -500,7 +500,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     <div class="modal-body" id="pay-modal-body"></div>
   </div>
 </div>
-
+ 
 <!-- CONTRACTOR MODAL -->
 <div class="modal-backdrop" id="modal-contractor">
   <div class="modal-sheet">
@@ -523,7 +523,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- MAINTENANCE MODAL -->
 <div class="modal-backdrop" id="modal-maint">
   <div class="modal-sheet">
@@ -548,7 +548,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <!-- ADMIN MODAL -->
 <div class="modal-backdrop" id="modal-admin">
   <div class="modal-sheet">
@@ -564,7 +564,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 </div>
-
+ 
 <script>
 // ══ STATE ══
 const today = new Date();
@@ -588,7 +588,7 @@ let nextIds={unit:7,tenant:6,account:1,admin:2,contractor:1,maint:1};
 let editIds={unit:null,tenant:null,contractor:null};
 let selCat='All';
 let settings={grace:3,flat:50,daily:5,zelle:'',apple:'',mname:'',mphone:''};
-
+ 
 // ══ HELPERS ══
 const mk=(d)=>d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0');
 const mlabel=(k)=>{const[y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('en-US',{month:'short',year:'numeric'});};
@@ -600,7 +600,7 @@ const getP=(t,k)=>t.pmts[k]||{status:'unpaid',method:''};
 const daysLate=(t,k)=>{const[y,m]=k.split('-');return Math.floor((today-new Date(+y,+m-1,t.dueDay))/(864e5));};
 const lateFee=(t,k)=>{const dl=daysLate(t,k);if(dl<=settings.grace)return 0;return settings.flat+((dl-settings.grace)*settings.daily);};
 const lStatus=(t)=>{if(t.mtm)return'mtm';const d=new Date(t.lEnd),diff=Math.ceil((d-today)/864e5);if(diff<0)return'expired';if(diff<=60)return'expiring';return'active';};
-
+ 
 // ══ AUTH ══
 function doLogin(){
   const u=document.getElementById('li-user').value.trim();
@@ -619,7 +619,7 @@ function doLogout(){
   document.getElementById('app-screen').classList.remove('active');
   document.getElementById('login-screen').classList.add('active');
 }
-
+ 
 // ══ NAVIGATION ══
 function showPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -634,7 +634,7 @@ function showPage(name,el){
   if(name==='contractors')renderContractors();
   if(name==='more'){renderAdmins();renderReminders();}
 }
-
+ 
 // ══ MODALS ══
 function openModal(id){
   if(id==='account-switcher')buildAcctSwitcher();
@@ -650,12 +650,12 @@ function openModal(id){
     s.innerHTML='<option value="">Select...</option>'+at().map(t=>`<option value="${t.id}">${t.name} (${t.unit})</option>`).join('');
     document.getElementById('l-start').value='';document.getElementById('l-end').value='';
   }
-  if(id==='unit'){editIds.unit=null;document.getElementById('unit-modal-title').textContent='Add Unit';document.getElementById('u-num').value='';document.getElementById('u-rent').value='';}
+  if(id==='unit' && editIds.unit==null){document.getElementById('unit-modal-title').textContent='Add Unit';document.getElementById('u-num').value='';document.getElementById('u-rent').value='';}
   if(id==='contractor'){editIds.contractor=null;document.getElementById('con-modal-title').textContent='Add Contractor';['c-name','c-phone','c-email','c-notes'].forEach(x=>document.getElementById(x).value='');}
   document.getElementById('modal-'+id).classList.add('open');
 }
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('open');}
-
+ 
 // ══ ACCOUNTS ══
 function buildAcctSwitcher(){
   document.getElementById('acct-switcher-list').innerHTML=accounts.map(a=>`
@@ -670,7 +670,7 @@ function saveAccount(){
   accounts.push({id:nextIds.account++,name,owner:document.getElementById('a-owner').value.trim()});
   closeModal('account');
 }
-
+ 
 // ══ DASHBOARD ══
 function renderDash(){
   const k=mk(today),ts=at(),us=au();
@@ -695,7 +695,7 @@ function renderDash(){
   document.getElementById('dash-alerts').innerHTML=alerts||'<div style="color:var(--text2);font-size:13px;text-align:center;padding:8px 0;">No alerts — all looks good!</div>';
   document.getElementById('dash-activity').innerHTML=activity.length===0?'<div class="empty"><div class="empty-icon">📝</div><div class="empty-text">No recent activity</div></div>':activity.slice(-6).reverse().map(a=>`<div class="card" style="padding:10px 14px;margin-bottom:8px;"><div style="font-size:13px;font-weight:700;">${a.name} <span style="font-weight:400;color:var(--text2);">(${a.unit})</span></div><div style="font-size:12px;color:var(--text2);">${a.action} · ${a.date}</div></div>`).join('');
 }
-
+ 
 // ══ UNITS ══
 function renderUnits(){
   const us=au(),ts=at();
@@ -708,25 +708,45 @@ function renderUnits(){
         <div style="display:flex;align-items:center;gap:8px;">
           ${occ[u.num]?`<span class="badge badge-active">Occupied</span>`:`<span class="badge badge-vacant">Vacant</span>`}
           <button class="btn btn-outline btn-sm" onclick="editUnit(${u.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteUnit(${u.id})">Delete</button>
         </div>
       </div>
       ${occ[u.num]?`<div style="font-size:12px;color:var(--text2);margin-top:6px;">Tenant: ${occ[u.num]}</div>`:''}
     </div>`).join('');
 }
 function editUnit(id){
-  const u=units.find(x=>x.id===id);editIds.unit=id;
+  const u=units.find(x=>x.id===id);
+  editIds.unit=id;
   document.getElementById('unit-modal-title').textContent='Edit Unit';
-  document.getElementById('u-num').value=u.num;document.getElementById('u-rent').value=u.rent;
-  openModal('unit');
+  document.getElementById('u-num').value=u.num;
+  document.getElementById('u-rent').value=u.rent;
+  document.getElementById('modal-unit').classList.add('open');
 }
 function saveUnit(){
   const num=document.getElementById('u-num').value.trim();if(!num)return;
   const rent=parseFloat(document.getElementById('u-rent').value)||0;
-  if(editIds.unit!=null){const u=units.find(x=>x.id===editIds.unit);u.num=num;u.rent=rent;editIds.unit=null;}
-  else units.push({id:nextIds.unit++,aid:curAccount,num,rent});
+  if(editIds.unit!=null){
+    const u=units.find(x=>x.id===editIds.unit);
+    u.num=num;u.rent=rent;
+    editIds.unit=null;
+  } else {
+    units.push({id:nextIds.unit++,aid:curAccount,num,rent});
+  }
   closeModal('unit');renderUnits();
 }
-
+function deleteUnit(id){
+  const u=units.find(x=>x.id===id);
+  const ts=at();
+  const occupied=ts.find(t=>t.unit===u.num);
+  if(occupied){
+    if(!confirm('This unit has a tenant ('+occupied.name+'). Deleting it will NOT delete the tenant. Continue?'))return;
+  } else {
+    if(!confirm('Delete unit '+u.num+'? This cannot be undone.'))return;
+  }
+  units=units.filter(x=>x.id!==id);
+  renderUnits();
+}
+ 
 // ══ TENANTS ══
 function renderTenants(list){
   if(!list.length){document.getElementById('tenants-list').innerHTML='<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No tenants yet.</div></div>';return;}
@@ -739,6 +759,7 @@ function renderTenants(list){
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px;">
           ${t.dep>0?`<span class="badge badge-deposit">Dep ${fm(t.dep)}</span>`:''}
+          <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteTenant(${t.id})">Delete</button>
           <span style="color:var(--teal);font-size:18px;">›</span>
         </div>
       </div>
@@ -756,6 +777,13 @@ function editTenant(id){
   document.getElementById('t-dep').value=t.dep||'';document.getElementById('t-depdate').value=t.depDate||'';
   openModal('tenant');
 }
+function deleteTenant(id){
+  const t=tenants.find(x=>x.id===id);
+  if(!t){alert('Tenant not found.');return;}
+  if(!confirm('Delete '+t.name+'? This cannot be undone.'))return;
+  tenants=tenants.filter(x=>x.id!==id);
+  renderTenants(at());
+}
 function saveTenant(){
   const name=document.getElementById('t-name').value.trim(),unit=document.getElementById('t-unit').value;
   const err=document.getElementById('tenant-form-err');
@@ -765,7 +793,7 @@ function saveTenant(){
   else{tenants.push({id:nextIds.tenant++,aid:curAccount,mtm:false,maint:[],pmts:{},leaseFile:null,...d});activity.push({name,unit,action:'Tenant added',date:today.toLocaleDateString()});}
   closeModal('tenant');renderTenants(at());
 }
-
+ 
 // ══ RENT ══
 function initRentMonthSel(){
   const s=document.getElementById('rent-month-sel');s.innerHTML='';
@@ -837,7 +865,7 @@ function recordManualPay(id,k){
   activity.push({name:t.name,unit:t.unit,action:`Rent paid by ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});
   closeModal('payment');renderRent();
 }
-
+ 
 // ══ LEASES ══
 function renderLeases(){
   const ts=at();
@@ -870,7 +898,7 @@ function saveLease(){
   activity.push({name:t.name,unit:t.unit,action:'Lease updated',date:today.toLocaleDateString()});
   closeModal('lease');renderLeases();
 }
-
+ 
 // ══ CONTRACTORS ══
 const CATS=['All','Handyman','Electrician','Drywall repair','Plumbing','Septic / drain field','Other'];
 const CCAT_C={'Handyman':'#92400E','Electrician':'#1E40AF','Drywall repair':'#374151','Plumbing':'#065F46','Septic / drain field':'#166534','Other':'#3730A3'};
@@ -913,7 +941,7 @@ function saveContractor(){
   closeModal('contractor');renderContractors();
 }
 function delContractor(id){if(confirm('Remove?')){contractors=contractors.filter(c=>c.id!==id);renderContractors();}}
-
+ 
 // ══ REMINDERS ══
 function generateReminders(){
   const k=mk(today),ts=at(),nr=[];
@@ -944,7 +972,7 @@ function renderReminders(){
     </div>`;
   }).join('');
 }
-
+ 
 // ══ ADMINS ══
 function renderAdmins(){
   document.getElementById('admins-list').innerHTML=admins.map(a=>`
@@ -964,7 +992,7 @@ function saveAdmin(){
   closeModal('admin');renderAdmins();
 }
 function delAdmin(id){if(admins.length<=1){alert('Cannot remove last admin.');return;}if(confirm('Remove?')){admins=admins.filter(a=>a.id!==id);renderAdmins();}}
-
+ 
 // ══ SETTINGS ══
 function saveSettings(){
   settings.grace=parseInt(document.getElementById('s-grace').value)||0;
@@ -976,7 +1004,7 @@ function saveSettings(){
   settings.mphone=document.getElementById('s-mphone').value.trim();
   const el=document.getElementById('settings-saved');el.style.display='block';setTimeout(()=>el.style.display='none',2000);
 }
-
+ 
 // ══ PROFILE ══
 function openProfile(id){
   const t=tenants.find(x=>x.id===id);
@@ -1069,12 +1097,12 @@ function saveMaint(){
   activity.push({name:t.name,unit:t.unit,action:'Maintenance record added',date:today.toLocaleDateString()});
   closeModal('maint');openProfile(id);
 }
-
+ 
 function showInstallHelp(){
   const el=document.getElementById('install-overlay');
   el.style.display='flex';
 }
-
+ 
 // ══ SERVICE WORKER (for PWA install) ══
 if('serviceWorker' in navigator){
   const sw=`self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline',{headers:{'Content-Type':'text/plain'}}))));`;
