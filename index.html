@@ -58,13 +58,22 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
 .header-btns { display: flex; gap: 8px; }
 .hbtn { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
 
-/* ── BOTTOM NAV ── */
-.bottom-nav { background: var(--navy); padding: 8px 0 calc(var(--safe-bot) + 8px); display: flex; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.08); }
-.bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; }
-.bnav-icon { font-size: 20px; opacity: 0.45; transition: opacity 0.15s; }
-.bnav-label { color: rgba(255,255,255,0.4); font-size: 10px; font-weight: 500; transition: color 0.15s; }
-.bnav-item.active .bnav-icon { opacity: 1; }
-.bnav-item.active .bnav-label { color: var(--teal2); }
+/* ── BOTTOM NAV (hidden) ── */
+.bottom-nav { display: none; }
+.bnav-item { display: none; }
+.bnav-icon { display: none; }
+.bnav-label { display: none; }
+
+/* ── TOP NAV ── */
+.top-nav { background: var(--navy); display: flex; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.1); overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.top-nav::-webkit-scrollbar { display: none; }
+.tnav-item { flex: 1; min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 8px 4px; border-bottom: 2px solid transparent; transition: all 0.15s; }
+.tnav-icon { font-size: 18px; opacity: 0.45; transition: opacity 0.15s; }
+.tnav-label { color: rgba(255,255,255,0.4); font-size: 9px; font-weight: 600; transition: color 0.15s; white-space: nowrap; }
+.tnav-item.active { border-bottom-color: var(--teal2); }
+.tnav-item.active .tnav-icon { opacity: 1; }
+.tnav-item.active .tnav-label { color: var(--teal2); }
+.tnav-item:hover .tnav-label { color: rgba(255,255,255,0.7); }
 
 /* ── PAGE CONTENT ── */
 .pages { flex: 1; overflow: hidden; position: relative; }
@@ -280,6 +289,17 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     </div>
   </div>
 
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <div class="tnav-item active" id="tnav-dash" onclick="showPage('dash',this)"><div class="tnav-icon">📊</div><div class="tnav-label">Dashboard</div></div>
+    <div class="tnav-item" id="tnav-units" onclick="showPage('units',this)"><div class="tnav-icon">🏢</div><div class="tnav-label">Units</div></div>
+    <div class="tnav-item" id="tnav-tenants" onclick="showPage('tenants',this)"><div class="tnav-icon">👥</div><div class="tnav-label">Tenants</div></div>
+    <div class="tnav-item" id="tnav-rent" onclick="showPage('rent',this)"><div class="tnav-icon">💰</div><div class="tnav-label">Rent</div></div>
+    <div class="tnav-item" id="tnav-leases" onclick="showPage('leases',this)"><div class="tnav-icon">📋</div><div class="tnav-label">Leases</div></div>
+    <div class="tnav-item" id="tnav-contractors" onclick="showPage('contractors',this)"><div class="tnav-icon">🔧</div><div class="tnav-label">Contractors</div></div>
+    <div class="tnav-item" id="tnav-more" onclick="showPage('more',this)"><div class="tnav-icon">⚙️</div><div class="tnav-label">More</div></div>
+  </div>
+
   <div class="pages">
     <!-- DASHBOARD -->
     <div class="page active" id="page-dash">
@@ -357,8 +377,8 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     <div class="page" id="page-profile"></div>
   </div>
 
-  <!-- Bottom nav -->
-  <div class="bottom-nav">
+  <!-- Nav moved to top — placeholder removed -->
+  <div class="bottom-nav" style="display:none;">
     <div class="bnav-item active" onclick="showPage('dash',this)"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
     <div class="bnav-item" onclick="showPage('units',this)"><div class="bnav-icon">🏢</div><div class="bnav-label">Units</div></div>
     <div class="bnav-item" onclick="showPage('tenants',this)"><div class="bnav-icon">👥</div><div class="bnav-label">Tenants</div></div>
@@ -553,6 +573,37 @@ let editIds={unit:null,tenant:null,contractor:null};
 let selCat='All';
 let settings={grace:3,flat:50,daily:5,zelle:'',apple:'',mname:'',mphone:''};
 
+// ══ PERSISTENCE ══
+function saveAll(){
+  try{
+    localStorage.setItem('pm_admins',JSON.stringify(admins));
+    localStorage.setItem('pm_accounts',JSON.stringify(accounts));
+    localStorage.setItem('pm_units',JSON.stringify(units));
+    localStorage.setItem('pm_tenants',JSON.stringify(tenants));
+    localStorage.setItem('pm_contractors',JSON.stringify(contractors));
+    localStorage.setItem('pm_activity',JSON.stringify(activity.slice(-50)));
+    localStorage.setItem('pm_settings',JSON.stringify(settings));
+    localStorage.setItem('pm_nextIds',JSON.stringify(nextIds));
+    localStorage.setItem('pm_curAccount',JSON.stringify(curAccount));
+  }catch(e){console.warn('Save failed:',e);}
+}
+function loadAll(){
+  try{
+    if(localStorage.getItem('pm_admins')) admins=JSON.parse(localStorage.getItem('pm_admins'));
+    if(localStorage.getItem('pm_accounts')) accounts=JSON.parse(localStorage.getItem('pm_accounts'));
+    if(localStorage.getItem('pm_units')) units=JSON.parse(localStorage.getItem('pm_units'));
+    if(localStorage.getItem('pm_tenants')){
+      tenants=JSON.parse(localStorage.getItem('pm_tenants'));
+      tenants.forEach(t=>{if(!t.maint)t.maint=[];if(!t.pmts)t.pmts={};if(t.leaseFile===undefined)t.leaseFile=null;});
+    }
+    if(localStorage.getItem('pm_contractors')) contractors=JSON.parse(localStorage.getItem('pm_contractors'));
+    if(localStorage.getItem('pm_activity')) activity=JSON.parse(localStorage.getItem('pm_activity'));
+    if(localStorage.getItem('pm_settings')){const s=JSON.parse(localStorage.getItem('pm_settings'));settings={...settings,...s};}
+    if(localStorage.getItem('pm_nextIds')){const n=JSON.parse(localStorage.getItem('pm_nextIds'));nextIds={...nextIds,...n};}
+    if(localStorage.getItem('pm_curAccount')) curAccount=JSON.parse(localStorage.getItem('pm_curAccount'));
+  }catch(e){console.warn('Load failed:',e);}
+}
+
 // ══ HELPERS ══
 const mk=(d)=>d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0');
 const mlabel=(k)=>{const[y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('en-US',{month:'short',year:'numeric'});};
@@ -572,6 +623,7 @@ function doLogin(){
   const a=admins.find(x=>x.username===u&&x.password===p);
   if(!a){document.getElementById('li-err').style.display='block';return;}
   curUser=a;
+  loadAll();
   document.getElementById('li-err').style.display='none';
   document.getElementById('login-screen').classList.remove('active');
   document.getElementById('app-screen').classList.add('active');
@@ -587,9 +639,12 @@ function doLogout(){
 // ══ NAVIGATION ══
 function showPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tnav-item').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   if(el)el.classList.add('active');
+  const tnavEl=document.getElementById('tnav-'+name);
+  if(tnavEl)tnavEl.classList.add('active');
   if(name==='dash')renderDash();
   if(name==='units')renderUnits();
   if(name==='tenants')renderTenants(at());
@@ -628,11 +683,11 @@ function buildAcctSwitcher(){
       ${a.id===curAccount?'<span style="color:var(--teal);font-size:18px;">✓</span>':''}
     </div>`).join('');
 }
-function switchAcct(id){curAccount=id;document.getElementById('acct-label').textContent=accounts.find(a=>a.id===id).name;renderDash();}
+function switchAcct(id){curAccount=id;document.getElementById('acct-label').textContent=accounts.find(a=>a.id===id)?.name||'Account';saveAll();renderDash();}
 function saveAccount(){
   const name=document.getElementById('a-name').value.trim();if(!name)return;
   accounts.push({id:nextIds.account++,name,owner:document.getElementById('a-owner').value.trim()});
-  closeModal('account');
+  closeModal('account');saveAll();
 }
 
 // ══ DASHBOARD ══
@@ -696,7 +751,7 @@ function saveUnit(){
   } else {
     units.push({id:nextIds.unit++,aid:curAccount,num,rent});
   }
-  closeModal('unit');renderUnits();
+  closeModal('unit');saveAll();renderUnits();
 }
 function deleteUnit(id){
   const u=units.find(x=>x.id===id);
@@ -708,7 +763,7 @@ function deleteUnit(id){
     if(!confirm('Delete unit '+u.num+'? This cannot be undone.'))return;
   }
   units=units.filter(x=>x.id!==id);
-  renderUnits();
+  saveAll();renderUnits();
 }
 
 // ══ TENANTS ══
@@ -746,7 +801,7 @@ function deleteTenant(id){
   if(!t){alert('Tenant not found.');return;}
   if(!confirm('Delete '+t.name+'? This cannot be undone.'))return;
   tenants=tenants.filter(x=>x.id!==id);
-  renderTenants(at());
+  saveAll();renderTenants(at());
 }
 function saveTenant(){
   const name=document.getElementById('t-name').value.trim(),unit=document.getElementById('t-unit').value;
@@ -755,7 +810,7 @@ function saveTenant(){
   const d={name,unit,phone:document.getElementById('t-phone').value.trim(),email:document.getElementById('t-email').value.trim(),rent:parseFloat(document.getElementById('t-rent').value)||0,dueDay:parseInt(document.getElementById('t-due').value)||1,lStart:document.getElementById('t-lstart').value,lEnd:document.getElementById('t-lend').value,dep:parseFloat(document.getElementById('t-dep').value)||0,depDate:document.getElementById('t-depdate').value};
   if(editIds.tenant!=null){const i=tenants.findIndex(t=>t.id===editIds.tenant);tenants[i]={...tenants[i],...d};activity.push({name,unit,action:'Tenant updated',date:today.toLocaleDateString()});}
   else{tenants.push({id:nextIds.tenant++,aid:curAccount,mtm:false,maint:[],pmts:{},leaseFile:null,...d});activity.push({name,unit,action:'Tenant added',date:today.toLocaleDateString()});}
-  closeModal('tenant');renderTenants(at());
+  closeModal('tenant');saveAll();renderTenants(at());
 }
 
 // ══ RENT ══
@@ -803,7 +858,7 @@ function renderRent(){
     </div>`;
   }).join('');
 }
-function undoPay(id,k){const t=tenants.find(x=>x.id===id);delete t.pmts[k];renderRent();}
+function undoPay(id,k){const t=tenants.find(x=>x.id===id);delete t.pmts[k];saveAll();renderRent();}
 function openPayModal(id,k){
   const t=tenants.find(x=>x.id===id),fee=lateFee(t,k),total=t.rent+fee;
   document.getElementById('pay-modal-title').textContent=`Payment — ${t.name}`;
@@ -821,13 +876,13 @@ function openPayModal(id,k){
   `;
   openModal('payment');
 }
-function recordPay(id,k,method){const t=tenants.find(x=>x.id===id);t.pmts[k]={status:'paid',method};activity.push({name:t.name,unit:t.unit,action:`Rent paid via ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});renderRent();}
+function recordPay(id,k,method){const t=tenants.find(x=>x.id===id);t.pmts[k]={status:'paid',method};activity.push({name:t.name,unit:t.unit,action:`Rent paid via ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});saveAll();renderRent();}
 function recordManualPay(id,k){
   const t=tenants.find(x=>x.id===id);
   const method=document.getElementById('pc-check').checked?'Check':document.getElementById('pc-cash').checked?'Cash':'Manual';
   t.pmts[k]={status:'paid',method};
   activity.push({name:t.name,unit:t.unit,action:`Rent paid by ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});
-  closeModal('payment');renderRent();
+  closeModal('payment');saveAll();renderRent();
 }
 
 // ══ LEASES ══
@@ -854,13 +909,13 @@ function renderLeases(){
     </div>`;
   }).join('');
 }
-function toggleMtm(id){const t=tenants.find(x=>x.id===id);t.mtm=!t.mtm;activity.push({name:t.name,unit:t.unit,action:t.mtm?'Switched to month-to-month':'Restored fixed lease',date:today.toLocaleDateString()});renderLeases();}
+function toggleMtm(id){const t=tenants.find(x=>x.id===id);t.mtm=!t.mtm;activity.push({name:t.name,unit:t.unit,action:t.mtm?'Switched to month-to-month':'Restored fixed lease',date:today.toLocaleDateString()});saveAll();renderLeases();}
 function saveLease(){
   const tid=document.getElementById('l-tenant').value;if(!tid)return;
   const t=tenants.find(x=>x.id==tid);
   t.lStart=document.getElementById('l-start').value;t.lEnd=document.getElementById('l-end').value;t.mtm=false;
   activity.push({name:t.name,unit:t.unit,action:'Lease updated',date:today.toLocaleDateString()});
-  closeModal('lease');renderLeases();
+  closeModal('lease');saveAll();renderLeases();
 }
 
 // ══ CONTRACTORS ══
@@ -902,9 +957,9 @@ function saveContractor(){
   const d={name,cat:document.getElementById('c-cat').value,phone:document.getElementById('c-phone').value.trim(),email:document.getElementById('c-email').value.trim(),notes:document.getElementById('c-notes').value.trim()};
   if(editIds.contractor!=null){const i=contractors.findIndex(c=>c.id===editIds.contractor);contractors[i]={...contractors[i],...d};editIds.contractor=null;}
   else contractors.push({id:nextIds.contractor++,...d});
-  closeModal('contractor');renderContractors();
+  closeModal('contractor');saveAll();renderContractors();
 }
-function delContractor(id){if(confirm('Remove?')){contractors=contractors.filter(c=>c.id!==id);renderContractors();}}
+function delContractor(id){if(confirm('Remove?')){contractors=contractors.filter(c=>c.id!==id);saveAll();renderContractors();}}
 
 // ══ REMINDERS ══
 function generateReminders(){
@@ -953,9 +1008,9 @@ function saveAdmin(){
   if(!name||!username||password.length<6||admins.find(a=>a.username===username)){err.style.display='block';return;}
   err.style.display='none';
   admins.push({id:nextIds.admin++,name,username,password,role:document.getElementById('ad-role').value});
-  closeModal('admin');renderAdmins();
+  closeModal('admin');saveAll();renderAdmins();
 }
-function delAdmin(id){if(admins.length<=1){alert('Cannot remove last admin.');return;}if(confirm('Remove?')){admins=admins.filter(a=>a.id!==id);renderAdmins();}}
+function delAdmin(id){if(admins.length<=1){alert('Cannot remove last admin.');return;}if(confirm('Remove?')){admins=admins.filter(a=>a.id!==id);saveAll();renderAdmins();}}
 
 // ══ SETTINGS ══
 function saveSettings(){
@@ -966,7 +1021,7 @@ function saveSettings(){
   settings.apple=document.getElementById('s-apple').value.trim();
   settings.mname=document.getElementById('s-mname').value.trim();
   settings.mphone=document.getElementById('s-mphone').value.trim();
-  const el=document.getElementById('settings-saved');el.style.display='block';setTimeout(()=>el.style.display='none',2000);
+  saveAll();const el=document.getElementById('settings-saved');el.style.display='block';setTimeout(()=>el.style.display='none',2000);
 }
 
 // ══ PROFILE ══
@@ -974,7 +1029,7 @@ function openProfile(id){
   const t=tenants.find(x=>x.id===id);
   const totalExp=t.maint.reduce((a,m)=>a+(parseFloat(m.cost)||0),0);
   document.getElementById('page-profile').innerHTML=`
-    <button class="back-btn" onclick="showPage('tenants',document.querySelector('.bnav-item:nth-child(3)'))">‹ Tenants</button>
+    <button class="back-btn" onclick="showPage('tenants',document.getElementById('tnav-tenants'))">‹ Tenants</button>
     <div class="card" style="margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         <div style="width:46px;height:46px;border-radius:50%;background:#DBEAFE;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#1E40AF;flex-shrink:0;">${t.name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase()}</div>
@@ -1048,7 +1103,7 @@ function viewLease(id){
   if(t.leaseFile.type==='application/pdf')w.document.write(`<iframe src="${t.leaseFile.data}" style="width:100%;height:100%;border:none;"></iframe>`);
   else w.document.write(`<img src="${t.leaseFile.data}" style="max-width:100%;" />`);
 }
-function removeLease(id){const t=tenants.find(x=>x.id===id);t.leaseFile=null;openProfile(id);}
+function removeLease(id){const t=tenants.find(x=>x.id===id);t.leaseFile=null;saveAll();openProfile(id);}
 function openMaintModal(tid){
   document.getElementById('maint-tid').value=tid;
   ['maint-date','maint-desc','maint-cost'].forEach(x=>document.getElementById(x).value='');
@@ -1059,7 +1114,7 @@ function saveMaint(){
   const t=tenants.find(x=>x.id===id);
   t.maint.push({id:nextIds.maint++,date:document.getElementById('maint-date').value,type:document.getElementById('maint-type').value,desc:document.getElementById('maint-desc').value.trim(),cost:parseFloat(document.getElementById('maint-cost').value)||0,status:document.getElementById('maint-status').value});
   activity.push({name:t.name,unit:t.unit,action:'Maintenance record added',date:today.toLocaleDateString()});
-  closeModal('maint');openProfile(id);
+  closeModal('maint');saveAll();openProfile(id);
 }
 
 // ══ SERVICE WORKER (for PWA install) ══
