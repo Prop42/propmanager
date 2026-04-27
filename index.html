@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PropManager">
+<meta name="theme-color" content="#0F2240">
+<title>PropManager</title>
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;PropManager&quot;,&quot;short_name&quot;:&quot;PropMgr&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230F2240&quot;,&quot;theme_color&quot;:&quot;%230F2240&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230F2240'/%3E%3Ctext x='96' y='130' text-anchor='middle' font-size='100' font-family='system-ui'%3E🏠%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<style>
+:root {
+  --navy: #0F2240;
+  --teal: #0D8C7A;
+  --teal2: #00B09B;
+  --accent: #F59E0B;
+  --white: #FFFFFF;
+  --light: #F0F4F8;
+  --card: #FFFFFF;
+  --text: #1a1a2e;
+  --text2: #64748B;
+  --border: #E2E8F0;
+  --danger: #E24B4A;
+  --warn: #F59E0B;
+  --success: #1D9E75;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; background: var(--navy); color: var(--text); }
+
+/* ── SCREENS ── */
+.screen { display: none; height: 100%; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── LOGIN ── */
+#login-screen { background: var(--navy); align-items: center; justify-content: center; padding: 2rem; }
+.login-box { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 2rem; width: 100%; max-width: 360px; }
+.login-logo { text-align: center; font-size: 48px; margin-bottom: 1rem; }
+.login-title { color: #fff; font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 0.25rem; }
+.login-sub { color: rgba(255,255,255,0.5); font-size: 13px; text-align: center; margin-bottom: 1.5rem; }
+.login-field { margin-bottom: 1rem; }
+.login-field label { display: block; color: rgba(255,255,255,0.6); font-size: 12px; margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; }
+.login-field input { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 16px; outline: none; }
+.login-field input:focus { border-color: var(--teal2); }
+.login-btn { width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
+.login-error { color: #ff7070; font-size: 13px; text-align: center; margin-top: 8px; display: none; }
+.login-hint { color: rgba(255,255,255,0.3); font-size: 11px; text-align: center; margin-top: 12px; }
+
+/* ── APP LAYOUT ── */
+#app-screen { background: var(--light); }
+.app-header { background: var(--navy); padding: calc(var(--safe-top) + 12px) 16px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.app-header-left { display: flex; align-items: center; gap: 10px; }
+.app-logo { color: var(--teal2); font-size: 20px; }
+.app-title { color: #fff; font-size: 17px; font-weight: 700; }
+.app-acct { color: rgba(255,255,255,0.55); font-size: 11px; }
+.header-btns { display: flex; gap: 8px; }
+.hbtn { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { background: var(--navy); padding: 8px 0 calc(var(--safe-bot) + 8px); display: flex; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.08); }
+.bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; }
+.bnav-icon { font-size: 20px; opacity: 0.45; transition: opacity 0.15s; }
+.bnav-label { color: rgba(255,255,255,0.4); font-size: 10px; font-weight: 500; transition: color 0.15s; }
+.bnav-item.active .bnav-icon { opacity: 1; }
+.bnav-item.active .bnav-label { color: var(--teal2); }
+
+/* ── PAGE CONTENT ── */
+.pages { flex: 1; overflow: hidden; position: relative; }
+.page { display: none; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; }
+.page.active { display: block; }
+
+/* ── CARDS & METRICS ── */
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.metric-card { background: var(--card); border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.metric-label { font-size: 10px; color: var(--text2); margin-bottom: 3px; font-weight: 500; }
+.metric-value { font-size: 20px; font-weight: 700; color: var(--text); }
+.metric-value.ok { color: var(--success); }
+.metric-value.warn { color: var(--warn); }
+.metric-value.danger { color: var(--danger); }
+
+.card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.card-sub { font-size: 12px; color: var(--text2); }
+.card-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.card-row:last-child { border-bottom: none; padding-bottom: 0; }
+.card-row-left { flex: 1; min-width: 0; }
+.card-row-right { flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; gap: 6px; }
+
+/* ── ALERTS ── */
+.alert { padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-bottom: 8px; border-left: 3px solid; }
+.alert-warn { background: #FFFBEB; border-color: var(--warn); color: #92400E; }
+.alert-danger { background: #FEF2F2; border-color: var(--danger); color: #991B1B; }
+.alert-info { background: #EFF6FF; border-color: #3B82F6; color: #1E40AF; }
+
+/* ── BADGES ── */
+.badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-paid { background: #D1FAE5; color: #065F46; }
+.badge-unpaid { background: #FEE2E2; color: #991B1B; }
+.badge-late { background: #FEF3C7; color: #92400E; }
+.badge-active { background: #D1FAE5; color: #065F46; }
+.badge-mtm { background: #DBEAFE; color: #1E40AF; }
+.badge-expiring { background: #FEF3C7; color: #92400E; }
+.badge-expired { background: #FEE2E2; color: #991B1B; }
+.badge-vacant { background: #F3F4F6; color: #4B5563; }
+.badge-deposit { background: #D1FAE5; color: #065F46; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; padding: 8px 14px; transition: opacity 0.15s; }
+.btn:active { opacity: 0.75; }
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-outline { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); }
+.btn-danger { background: #FEE2E2; color: #991B1B; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+.btn-full { width: 100%; padding: 14px; font-size: 15px; border-radius: 12px; }
+
+/* ── FAB ── */
+.fab { position: fixed; bottom: calc(var(--safe-bot) + 72px); right: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--teal); border: none; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(13,140,122,0.45); cursor: pointer; z-index: 50; transition: transform 0.15s; }
+.fab:active { transform: scale(0.92); }
+
+/* ── SECTION HEADERS ── */
+.section-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.section-hdr h2 { font-size: 17px; font-weight: 700; color: var(--text); }
+
+/* ── SEARCH ── */
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-wrap input { width: 100%; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 36px; font-size: 15px; color: var(--text); outline: none; }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 16px; pointer-events: none; }
+
+/* ── FORMS / MODALS ── */
+.modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; }
+.modal-backdrop.open { display: flex; }
+.modal-sheet { background: var(--card); border-radius: 20px 20px 0 0; padding: 0 0 calc(var(--safe-bot) + 16px); width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 10px auto 0; }
+.modal-hdr { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.modal-hdr h3 { font-size: 17px; font-weight: 700; }
+.modal-close { font-size: 22px; color: var(--text2); background: none; border: none; cursor: pointer; padding: 0 4px; }
+.modal-body { padding: 16px; }
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.form-row input, .form-row select, .form-row textarea { width: 100%; background: var(--light); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 12px; font-size: 15px; color: var(--text); outline: none; -webkit-appearance: none; font-family: inherit; }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--teal); }
+.form-row textarea { resize: vertical; min-height: 80px; }
+.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-error { color: var(--danger); font-size: 12px; margin-top: 6px; display: none; }
+
+/* ── PROFILE TABS ── */
+.ptab-bar { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; scrollbar-width: none; }
+.ptab-bar::-webkit-scrollbar { display: none; }
+.ptab { padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--card); color: var(--text2); border: 1.5px solid var(--border); }
+.ptab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+.psection { display: none; }
+.psection.active { display: block; }
+
+/* ── KV TABLE ── */
+.kv-row { display: flex; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.kv-row:last-child { border-bottom: none; }
+.kv-key { color: var(--text2); font-size: 13px; width: 130px; flex-shrink: 0; }
+.kv-val { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+
+/* ── TOGGLE ── */
+.toggle-wrap { display: flex; align-items: center; gap: 10px; }
+.ios-toggle { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+.ios-toggle input { opacity: 0; width: 0; height: 0; }
+.ios-slider { position: absolute; inset: 0; background: #ccc; border-radius: 13px; cursor: pointer; transition: background 0.2s; }
+.ios-slider:before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.ios-toggle input:checked + .ios-slider { background: var(--teal); }
+.ios-toggle input:checked + .ios-slider:before { transform: translateX(18px); }
+
+/* ── CONTRACTOR CHIPS ── */
+.cat-chips { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 2px; scrollbar-width: none; }
+.cat-chips::-webkit-scrollbar { display: none; }
+.cat-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; background: var(--card); color: var(--text2); border: 1.5px solid var(--border); flex-shrink: 0; }
+.cat-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* ── MAINT CARD ── */
+.maint-card { background: var(--light); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.maint-card-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.maint-card-type { font-size: 13px; font-weight: 700; }
+.maint-card-date { font-size: 11px; color: var(--text2); }
+.maint-card-desc { font-size: 12px; color: var(--text2); margin-top: 3px; }
+.maint-card-cost { font-size: 12px; color: var(--danger); font-weight: 600; margin-top: 3px; }
+
+/* ── DAY PILL ── */
+.day-pill { display: inline-block; border-radius: 20px; padding: 3px 8px; font-size: 12px; font-weight: 700; }
+.day-pill-red { background: #FEE2E2; color: #991B1B; }
+.day-pill-yellow { background: #FEF3C7; color: #92400E; }
+.day-pill-green { background: #D1FAE5; color: #065F46; }
+
+/* ── PAYMENT BTNS ── */
+.pay-btn-zelle { background: #6D1ED4; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; width: 100%; cursor: pointer; margin-bottom: 10px; }
+.pay-btn-apple { background: #1D1D1F; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; width: 100%; cursor: pointer; margin-bottom: 10px; }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 2.5rem 1rem; color: var(--text2); }
+.empty-icon { font-size: 40px; margin-bottom: 10px; }
+.empty-text { font-size: 14px; }
+
+/* ── REMINDER ITEM ── */
+.reminder-card { border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; }
+.reminder-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+.reminder-msg { color: var(--text); margin-bottom: 2px; }
+.reminder-meta { font-size: 11px; color: var(--text2); }
+
+/* ── UPLOAD AREA ── */
+.upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; color: var(--text2); font-size: 14px; }
+.upload-area:active { background: var(--light); }
+.lease-file-card { background: var(--light); border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.lease-file-name { font-size: 13px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── ADMIN LIST ── */
+.admin-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.admin-row:last-child { border-bottom: none; }
+.admin-name { font-size: 14px; font-weight: 700; }
+.admin-user { font-size: 12px; color: var(--text2); }
+
+/* ── ACCOUNT PILL ── */
+.acct-pill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.acct-pill-name { color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acct-pill-arrow { color: rgba(255,255,255,0.5); font-size: 10px; }
+
+/* ── SECTION LABEL ── */
+.section-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin: 14px 0 8px; }
+
+/* ── CHECKLIST ROW ── */
+.check-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 14px; }
+.check-row input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--teal); cursor: pointer; }
+
+/* ── BACK BTN ── */
+.back-btn { display: flex; align-items: center; gap: 6px; color: var(--teal); font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; background: none; border: none; padding: 0; }
+
+/* ── EXPENSE TABLE ── */
+.exp-row { display: flex; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+.exp-row:last-child { border-bottom: none; }
+.exp-date { font-size: 11px; color: var(--text2); width: 68px; flex-shrink: 0; }
+.exp-type { font-size: 12px; font-weight: 600; flex: 1; }
+.exp-cost { font-size: 13px; font-weight: 700; color: var(--danger); flex-shrink: 0; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div class="screen active" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🏠</div>
+    <div class="login-title">PropManager</div>
+    <div class="login-sub">Property Management Platform</div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="li-user" placeholder="Enter username" autocomplete="username" />
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="li-pass" placeholder="Enter password" autocomplete="current-password" />
+    </div>
+    <div class="login-error" id="li-err">Invalid username or password.</div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-hint">Default: admin / admin123</div>
+
+    <div style="margin-top:20px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3);border-radius:12px;padding:14px;">
+      <div style="color:#00D4AA;font-size:13px;font-weight:700;margin-bottom:6px;">📲 Install as an app on your iPhone</div>
+      <div style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.6;">
+        1. Tap the <strong style="color:#fff;">Share button ⬆</strong> at the bottom of Safari<br>
+        2. Scroll down and tap <strong style="color:#fff;">"Add to Home Screen"</strong><br>
+        3. Tap <strong style="color:#fff;">Add</strong> — done!
+      </div>
+      <button onclick="showInstallHelp()" style="margin-top:10px;width:100%;background:#00B09B;border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">
+        📍 Show me where the Share button is
+      </button>
+    </div>
+
+    <!-- Install help overlay -->
+    <div id="install-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;padding:20px;display:none;flex-direction:column;align-items:center;justify-content:flex-end;">
+      <div style="background:#1a2a3a;border-radius:20px;padding:24px;width:100%;max-width:380px;margin-bottom:60px;">
+        <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:16px;text-align:center;">How to install PropManager</div>
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+          <div style="background:#00B09B;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">1</div>
+          <div style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.5;">In Safari, look at the <strong style="color:#fff;">bottom toolbar</strong>. Tap the middle icon — a box with an arrow pointing up ⬆</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+          <div style="background:#00B09B;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">2</div>
+          <div style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.5;">A menu slides up. <strong style="color:#fff;">Scroll down</strong> in that menu until you see <strong style="color:#fff;">"Add to Home Screen"</strong></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;">
+          <div style="background:#00B09B;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">3</div>
+          <div style="color:rgba(255,255,255,0.85);font-size:14px;line-height:1.5;">Tap <strong style="color:#fff;">Add</strong> in the top right corner. The app icon will appear on your home screen!</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:rgba(255,255,255,0.6);text-align:center;">
+          💡 If you don't see the toolbar, scroll up on the page first — Safari hides it when you scroll down.
+        </div>
+        <button onclick="document.getElementById('install-overlay').style.display='none';" style="width:100%;background:#00B09B;border:none;border-radius:10px;padding:13px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;">Got it!</button>
+      </div>
+      <!-- Arrow pointing to bottom of screen -->
+      <div style="color:#00D4AA;font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;">⬇ The Share button is down here ⬇</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP SCREEN ══════════════ -->
+<div class="screen" id="app-screen">
+  <div class="app-header">
+    <div class="app-header-left">
+      <span class="app-logo">🏠</span>
+      <div>
+        <div class="app-title">PropManager</div>
+        <div class="app-acct" id="acct-label"></div>
+      </div>
+    </div>
+    <div class="header-btns">
+      <button class="hbtn" onclick="openModal('account-switcher')">Accts ▾</button>
+      <button class="hbtn" onclick="doLogout()">Out</button>
+    </div>
+  </div>
+
+  <div class="pages">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dash">
+      <div class="metrics-grid" id="dash-metrics"></div>
+      <div id="dash-alerts"></div>
+      <div class="section-label">Recent activity</div>
+      <div id="dash-activity"></div>
+    </div>
+
+    <!-- UNITS -->
+    <div class="page" id="page-units">
+      <div class="section-hdr"><h2>Units</h2><button class="btn btn-primary btn-sm" onclick="openModal('unit')">+ Unit</button></div>
+      <div id="units-list"></div>
+    </div>
+
+    <!-- TENANTS -->
+    <div class="page" id="page-tenants">
+      <div class="section-hdr"><h2>Tenants</h2><button class="btn btn-primary btn-sm" onclick="openModal('tenant')">+ Tenant</button></div>
+      <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" placeholder="Search tenants..." oninput="filterTenants(this.value)" /></div>
+      <div id="tenants-list"></div>
+    </div>
+
+    <!-- RENT -->
+    <div class="page" id="page-rent">
+      <div class="section-hdr">
+        <h2>Rent</h2>
+        <select id="rent-month-sel" onchange="renderRent()" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--text);outline:none;"></select>
+      </div>
+      <div class="metrics-grid" id="rent-metrics"></div>
+      <div id="rent-list"></div>
+    </div>
+
+    <!-- LEASES -->
+    <div class="page" id="page-leases">
+      <div class="section-hdr"><h2>Leases</h2><button class="btn btn-primary btn-sm" onclick="openModal('lease')">+ Lease</button></div>
+      <div id="leases-list"></div>
+    </div>
+
+    <!-- CONTRACTORS -->
+    <div class="page" id="page-contractors">
+      <div class="section-hdr"><h2>Contractors</h2><button class="btn btn-primary btn-sm" onclick="openModal('contractor')">+ Add</button></div>
+      <div class="cat-chips" id="cat-chips"></div>
+      <div id="contractors-list"></div>
+    </div>
+
+    <!-- MORE (reminders / admins / settings) -->
+    <div class="page" id="page-more">
+      <div class="section-label">Reminders</div>
+      <div class="card" style="margin-bottom:14px;">
+        <button class="btn btn-primary btn-full" onclick="generateReminders()">Simulate Reminders Now</button>
+        <div style="font-size:12px;color:var(--text2);margin-top:8px;">Simulates SMS alerts. Twilio connection available for real delivery.</div>
+      </div>
+      <div id="reminders-list"></div>
+      <div class="section-label" style="margin-top:14px;">Admin accounts</div>
+      <div class="card">
+        <div id="admins-list"></div>
+        <button class="btn btn-outline btn-full" style="margin-top:10px;" onclick="openModal('admin')">+ Add Admin</button>
+      </div>
+      <div class="section-label" style="margin-top:14px;">Settings</div>
+      <div class="card">
+        <div class="form-row"><label>Grace period (days)</label><input type="number" id="s-grace" value="3" /></div>
+        <div class="form-row"><label>Flat late fee ($)</label><input type="number" id="s-flat" value="50" /></div>
+        <div class="form-row"><label>Daily late fee ($)</label><input type="number" id="s-daily" value="5" /></div>
+        <div class="section-label" style="margin-top:0;">Payment Info</div>
+        <div class="form-row"><label>Zelle phone/email</label><input type="text" id="s-zelle" placeholder="(407) 555-0100" /></div>
+        <div class="form-row"><label>Apple Cash tag</label><input type="text" id="s-apple" placeholder="$YourTag" /></div>
+        <div class="form-row"><label>Maintenance person</label><input type="text" id="s-mname" placeholder="Bob's Maintenance" /></div>
+        <div class="form-row"><label>Maintenance phone</label><input type="text" id="s-mphone" placeholder="(407) 555-0199" /></div>
+        <button class="btn btn-primary btn-full" onclick="saveSettings()">Save Settings</button>
+        <div id="settings-saved" style="color:var(--success);font-size:13px;text-align:center;margin-top:8px;display:none;">✓ Saved</div>
+      </div>
+    </div>
+
+    <!-- PROFILE (injected dynamically) -->
+    <div class="page" id="page-profile"></div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="bnav-item active" onclick="showPage('dash',this)"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
+    <div class="bnav-item" onclick="showPage('units',this)"><div class="bnav-icon">🏢</div><div class="bnav-label">Units</div></div>
+    <div class="bnav-item" onclick="showPage('tenants',this)"><div class="bnav-icon">👥</div><div class="bnav-label">Tenants</div></div>
+    <div class="bnav-item" onclick="showPage('rent',this)"><div class="bnav-icon">💰</div><div class="bnav-label">Rent</div></div>
+    <div class="bnav-item" onclick="showPage('leases',this)"><div class="bnav-icon">📋</div><div class="bnav-label">Leases</div></div>
+    <div class="bnav-item" onclick="showPage('contractors',this)"><div class="bnav-icon">🔧</div><div class="bnav-label">Contractors</div></div>
+    <div class="bnav-item" onclick="showPage('more',this)"><div class="bnav-icon">⚙️</div><div class="bnav-label">More</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+<!-- ACCOUNT SWITCHER -->
+<div class="modal-backdrop" id="modal-account-switcher">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3>Accounts</h3><button class="modal-close" onclick="closeModal('account-switcher')">✕</button></div>
+    <div class="modal-body">
+      <div id="acct-switcher-list"></div>
+      <button class="btn btn-outline btn-full" style="margin-top:10px;" onclick="closeModal('account-switcher');openModal('account')">+ New Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ACCOUNT -->
+<div class="modal-backdrop" id="modal-account">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3>New Account</h3><button class="modal-close" onclick="closeModal('account')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Account name</label><input id="a-name" placeholder="My Properties" /></div>
+      <div class="form-row"><label>Owner name (if managing for others)</label><input id="a-owner" placeholder="Leave blank if your own" /></div>
+      <button class="btn btn-primary btn-full" onclick="saveAccount()">Save Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- UNIT MODAL -->
+<div class="modal-backdrop" id="modal-unit">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3 id="unit-modal-title">Add Unit</h3><button class="modal-close" onclick="closeModal('unit')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Unit name / number</label><input id="u-num" placeholder="Unit 4B" /></div>
+      <div class="form-row"><label>Monthly rent ($)</label><input id="u-rent" type="number" placeholder="1200" /></div>
+      <button class="btn btn-primary btn-full" onclick="saveUnit()">Save Unit</button>
+    </div>
+  </div>
+</div>
+
+<!-- TENANT MODAL -->
+<div class="modal-backdrop" id="modal-tenant">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3 id="tenant-modal-title">Add Tenant</h3><button class="modal-close" onclick="closeModal('tenant')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-2col">
+        <div class="form-row"><label>Full name</label><input id="t-name" placeholder="Jane Smith" /></div>
+        <div class="form-row"><label>Unit</label><select id="t-unit"></select></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label>Phone</label><input id="t-phone" type="tel" placeholder="(555) 000-0000" /></div>
+        <div class="form-row"><label>Email</label><input id="t-email" type="email" placeholder="jane@email.com" /></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label>Monthly rent ($)</label><input id="t-rent" type="number" /></div>
+        <div class="form-row"><label>Due day</label><input id="t-due" type="number" min="1" max="28" placeholder="1" /></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label>Lease start</label><input id="t-lstart" type="date" /></div>
+        <div class="form-row"><label>Lease end</label><input id="t-lend" type="date" /></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label>Deposit ($)</label><input id="t-dep" type="number" placeholder="0" /></div>
+        <div class="form-row"><label>Deposit date</label><input id="t-depdate" type="date" /></div>
+      </div>
+      <div id="tenant-form-err" class="form-error">Name and unit are required.</div>
+      <button class="btn btn-primary btn-full" onclick="saveTenant()">Save Tenant</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEASE MODAL -->
+<div class="modal-backdrop" id="modal-lease">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3>Update Lease</h3><button class="modal-close" onclick="closeModal('lease')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Tenant</label><select id="l-tenant"></select></div>
+      <div class="form-2col">
+        <div class="form-row"><label>Start</label><input id="l-start" type="date" /></div>
+        <div class="form-row"><label>End</label><input id="l-end" type="date" /></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveLease()">Save Lease</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-backdrop" id="modal-payment">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3 id="pay-modal-title">Payment</h3><button class="modal-close" onclick="closeModal('payment')">✕</button></div>
+    <div class="modal-body" id="pay-modal-body"></div>
+  </div>
+</div>
+
+<!-- CONTRACTOR MODAL -->
+<div class="modal-backdrop" id="modal-contractor">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3 id="con-modal-title">Add Contractor</h3><button class="modal-close" onclick="closeModal('contractor')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Name / Company</label><input id="c-name" placeholder="Bob's Electric" /></div>
+      <div class="form-row"><label>Category</label>
+        <select id="c-cat">
+          <option>Handyman</option><option>Electrician</option><option>Drywall repair</option>
+          <option>Plumbing</option><option>Septic / drain field</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label>Phone</label><input id="c-phone" type="tel" /></div>
+        <div class="form-row"><label>Email</label><input id="c-email" type="email" /></div>
+      </div>
+      <div class="form-row"><label>Notes</label><textarea id="c-notes" placeholder="License #, rate, specialties..."></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="saveContractor()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAINTENANCE MODAL -->
+<div class="modal-backdrop" id="modal-maint">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3>Add Maintenance</h3><button class="modal-close" onclick="closeModal('maint')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="maint-tid" />
+      <div class="form-2col">
+        <div class="form-row"><label>Date</label><input id="maint-date" type="date" /></div>
+        <div class="form-row"><label>Type</label>
+          <select id="maint-type"><option>Scheduled maintenance</option><option>Repair</option><option>Inspection</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="form-row"><label>Description</label><textarea id="maint-desc" placeholder="Details..."></textarea></div>
+      <div class="form-2col">
+        <div class="form-row"><label>Cost ($)</label><input id="maint-cost" type="number" placeholder="0" /></div>
+        <div class="form-row"><label>Status</label>
+          <select id="maint-status"><option>Scheduled</option><option>In progress</option><option>Completed</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveMaint()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="modal-backdrop" id="modal-admin">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><h3>Add Admin</h3><button class="modal-close" onclick="closeModal('admin')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Full name</label><input id="ad-name" /></div>
+      <div class="form-row"><label>Username</label><input id="ad-user" /></div>
+      <div class="form-row"><label>Password</label><input id="ad-pass" type="password" /></div>
+      <div class="form-row"><label>Role</label><select id="ad-role"><option>Admin</option><option>View only</option></select></div>
+      <div id="admin-form-err" class="form-error">All fields required. Username must be unique. Min 6-char password.</div>
+      <button class="btn btn-primary btn-full" onclick="saveAdmin()">Save Admin</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ STATE ══
+const today = new Date();
+let curUser = null, curAccount = 0;
+let admins = [{id:1,name:'Admin',username:'admin',password:'admin123',role:'Admin'}];
+let accounts = [{id:0,name:'My Properties',owner:''}];
+let units = [
+  {id:1,aid:0,num:'Unit 1A',rent:1250},{id:2,aid:0,num:'Unit 2B',rent:950},
+  {id:3,aid:0,num:'Unit 3C',rent:1100},{id:4,aid:0,num:'Unit 4D',rent:1400},
+  {id:5,aid:0,num:'Unit 5A',rent:875},{id:6,aid:0,num:'Unit 6B',rent:1050},
+];
+let tenants = [
+  {id:1,aid:0,name:'Maria Gonzalez',unit:'Unit 1A',phone:'(407) 555-0101',email:'maria@email.com',rent:1250,dueDay:1,lStart:'2023-06-01',lEnd:'2024-06-01',mtm:false,dep:1250,depDate:'2023-05-15',maint:[],pmts:{},leaseFile:null},
+  {id:2,aid:0,name:'James Okafor',unit:'Unit 2B',phone:'(407) 555-0182',email:'james@email.com',rent:950,dueDay:5,lStart:'2023-09-01',lEnd:'2025-09-01',mtm:false,dep:950,depDate:'2023-08-20',maint:[],pmts:{},leaseFile:null},
+  {id:3,aid:0,name:'Sandra Patel',unit:'Unit 3C',phone:'(407) 555-0234',email:'sandra@email.com',rent:1100,dueDay:1,lStart:'2024-01-01',lEnd:'2025-01-15',mtm:true,dep:1100,depDate:'2023-12-28',maint:[],pmts:{},leaseFile:null},
+  {id:4,aid:0,name:'Tom Nguyen',unit:'Unit 4D',phone:'(407) 555-0377',email:'tom@email.com',rent:1400,dueDay:15,lStart:'2023-04-15',lEnd:'2025-04-15',mtm:false,dep:0,depDate:'',maint:[],pmts:{},leaseFile:null},
+  {id:5,aid:0,name:'Brenda Cole',unit:'Unit 5A',phone:'(407) 555-0412',email:'brenda@email.com',rent:875,dueDay:1,lStart:'2024-03-01',lEnd:'2026-03-01',mtm:false,dep:875,depDate:'2024-02-20',maint:[],pmts:{},leaseFile:null},
+];
+let contractors=[],reminders=[],activity=[];
+let nextIds={unit:7,tenant:6,account:1,admin:2,contractor:1,maint:1};
+let editIds={unit:null,tenant:null,contractor:null};
+let selCat='All';
+let settings={grace:3,flat:50,daily:5,zelle:'',apple:'',mname:'',mphone:''};
+
+// ══ HELPERS ══
+const mk=(d)=>d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0');
+const mlabel=(k)=>{const[y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('en-US',{month:'short',year:'numeric'});};
+const fd=(s)=>s?new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}):'—';
+const fm=(n)=>n?'$'+Number(n).toLocaleString():'—';
+const at=()=>tenants.filter(t=>t.aid===curAccount);
+const au=()=>units.filter(u=>u.aid===curAccount);
+const getP=(t,k)=>t.pmts[k]||{status:'unpaid',method:''};
+const daysLate=(t,k)=>{const[y,m]=k.split('-');return Math.floor((today-new Date(+y,+m-1,t.dueDay))/(864e5));};
+const lateFee=(t,k)=>{const dl=daysLate(t,k);if(dl<=settings.grace)return 0;return settings.flat+((dl-settings.grace)*settings.daily);};
+const lStatus=(t)=>{if(t.mtm)return'mtm';const d=new Date(t.lEnd),diff=Math.ceil((d-today)/864e5);if(diff<0)return'expired';if(diff<=60)return'expiring';return'active';};
+
+// ══ AUTH ══
+function doLogin(){
+  const u=document.getElementById('li-user').value.trim();
+  const p=document.getElementById('li-pass').value;
+  const a=admins.find(x=>x.username===u&&x.password===p);
+  if(!a){document.getElementById('li-err').style.display='block';return;}
+  curUser=a;
+  document.getElementById('li-err').style.display='none';
+  document.getElementById('login-screen').classList.remove('active');
+  document.getElementById('app-screen').classList.add('active');
+  document.getElementById('acct-label').textContent=accounts[0].name;
+  initRentMonthSel();renderDash();
+}
+function doLogout(){
+  curUser=null;
+  document.getElementById('app-screen').classList.remove('active');
+  document.getElementById('login-screen').classList.add('active');
+}
+
+// ══ NAVIGATION ══
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  if(name==='dash')renderDash();
+  if(name==='units')renderUnits();
+  if(name==='tenants')renderTenants(at());
+  if(name==='rent')renderRent();
+  if(name==='leases')renderLeases();
+  if(name==='contractors')renderContractors();
+  if(name==='more'){renderAdmins();renderReminders();}
+}
+
+// ══ MODALS ══
+function openModal(id){
+  if(id==='account-switcher')buildAcctSwitcher();
+  if(id==='tenant'){
+    editIds.tenant=null;
+    document.getElementById('tenant-modal-title').textContent='Add Tenant';
+    ['t-name','t-phone','t-email','t-rent','t-due','t-lstart','t-lend','t-dep','t-depdate'].forEach(x=>document.getElementById(x).value='');
+    const us=document.getElementById('t-unit');
+    us.innerHTML=au().map(u=>`<option value="${u.num}">${u.num}</option>`).join('');
+  }
+  if(id==='lease'){
+    const s=document.getElementById('l-tenant');
+    s.innerHTML='<option value="">Select...</option>'+at().map(t=>`<option value="${t.id}">${t.name} (${t.unit})</option>`).join('');
+    document.getElementById('l-start').value='';document.getElementById('l-end').value='';
+  }
+  if(id==='unit'){editIds.unit=null;document.getElementById('unit-modal-title').textContent='Add Unit';document.getElementById('u-num').value='';document.getElementById('u-rent').value='';}
+  if(id==='contractor'){editIds.contractor=null;document.getElementById('con-modal-title').textContent='Add Contractor';['c-name','c-phone','c-email','c-notes'].forEach(x=>document.getElementById(x).value='');}
+  document.getElementById('modal-'+id).classList.add('open');
+}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('open');}
+
+// ══ ACCOUNTS ══
+function buildAcctSwitcher(){
+  document.getElementById('acct-switcher-list').innerHTML=accounts.map(a=>`
+    <div class="card-row" onclick="switchAcct(${a.id});closeModal('account-switcher');" style="cursor:pointer;">
+      <div class="card-row-left"><div class="card-title">${a.name}</div>${a.owner?`<div class="card-sub">Owner: ${a.owner}</div>`:''}</div>
+      ${a.id===curAccount?'<span style="color:var(--teal);font-size:18px;">✓</span>':''}
+    </div>`).join('');
+}
+function switchAcct(id){curAccount=id;document.getElementById('acct-label').textContent=accounts.find(a=>a.id===id).name;renderDash();}
+function saveAccount(){
+  const name=document.getElementById('a-name').value.trim();if(!name)return;
+  accounts.push({id:nextIds.account++,name,owner:document.getElementById('a-owner').value.trim()});
+  closeModal('account');
+}
+
+// ══ DASHBOARD ══
+function renderDash(){
+  const k=mk(today),ts=at(),us=au();
+  let paid=0,unpaid=0,fees=0,collected=0;
+  ts.forEach(t=>{const p=getP(t,k);if(p.status==='paid'){paid++;collected+=t.rent;}else{unpaid++;fees+=lateFee(t,k);}});
+  const occupied=new Set(ts.map(t=>t.unit));
+  const vacant=us.filter(u=>!occupied.has(u.num)).length;
+  const expiring=ts.filter(t=>lStatus(t)==='expiring').length;
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric-card"><div class="metric-label">Tenants</div><div class="metric-value">${ts.length}</div></div>
+    <div class="metric-card"><div class="metric-label">Vacant</div><div class="metric-value ${vacant>0?'warn':'ok'}">${vacant}</div></div>
+    <div class="metric-card"><div class="metric-label">Paid</div><div class="metric-value ok">${paid}</div></div>
+    <div class="metric-card"><div class="metric-label">Unpaid</div><div class="metric-value ${unpaid>0?'danger':'ok'}">${unpaid}</div></div>
+    <div class="metric-card"><div class="metric-label">Late fees</div><div class="metric-value ${fees>0?'danger':'ok'}">$${fees.toFixed(0)}</div></div>
+    <div class="metric-card"><div class="metric-label">Collected</div><div class="metric-value ok">${fm(collected)}</div></div>
+  `;
+  let alerts='';
+  us.filter(u=>!occupied.has(u.num)).forEach(u=>{alerts+=`<div class="alert alert-info">Vacant: <strong>${u.num}</strong> — ${fm(u.rent)}/mo</div>`;});
+  ts.filter(t=>lStatus(t)==='expiring').forEach(t=>{const d=Math.ceil((new Date(t.lEnd)-today)/864e5);alerts+=`<div class="alert alert-warn">Lease expiring: <strong>${t.name}</strong> — ${d} days (${fd(t.lEnd)})</div>`;});
+  ts.filter(t=>lStatus(t)==='expired').forEach(t=>{alerts+=`<div class="alert alert-danger">Lease expired: <strong>${t.name}</strong> (${t.unit}) — ${fd(t.lEnd)}</div>`;});
+  ts.forEach(t=>{const f=lateFee(t,k);if(f>0&&getP(t,k).status!=='paid')alerts+=`<div class="alert alert-danger">Late fee: <strong>${t.name}</strong> — ${daysLate(t,k)} days, $${f.toFixed(2)}</div>`;});
+  document.getElementById('dash-alerts').innerHTML=alerts||'<div style="color:var(--text2);font-size:13px;text-align:center;padding:8px 0;">No alerts — all looks good!</div>';
+  document.getElementById('dash-activity').innerHTML=activity.length===0?'<div class="empty"><div class="empty-icon">📝</div><div class="empty-text">No recent activity</div></div>':activity.slice(-6).reverse().map(a=>`<div class="card" style="padding:10px 14px;margin-bottom:8px;"><div style="font-size:13px;font-weight:700;">${a.name} <span style="font-weight:400;color:var(--text2);">(${a.unit})</span></div><div style="font-size:12px;color:var(--text2);">${a.action} · ${a.date}</div></div>`).join('');
+}
+
+// ══ UNITS ══
+function renderUnits(){
+  const us=au(),ts=at();
+  const occ={};ts.forEach(t=>occ[t.unit]=t.name);
+  if(!us.length){document.getElementById('units-list').innerHTML='<div class="empty"><div class="empty-icon">🏢</div><div class="empty-text">No units yet. Tap + Unit to add one.</div></div>';return;}
+  document.getElementById('units-list').innerHTML=us.map(u=>`
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div class="card-title">${u.num}</div><div class="card-sub">${fm(u.rent)}/mo</div></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${occ[u.num]?`<span class="badge badge-active">Occupied</span>`:`<span class="badge badge-vacant">Vacant</span>`}
+          <button class="btn btn-outline btn-sm" onclick="editUnit(${u.id})">Edit</button>
+        </div>
+      </div>
+      ${occ[u.num]?`<div style="font-size:12px;color:var(--text2);margin-top:6px;">Tenant: ${occ[u.num]}</div>`:''}
+    </div>`).join('');
+}
+function editUnit(id){
+  const u=units.find(x=>x.id===id);editIds.unit=id;
+  document.getElementById('unit-modal-title').textContent='Edit Unit';
+  document.getElementById('u-num').value=u.num;document.getElementById('u-rent').value=u.rent;
+  openModal('unit');
+}
+function saveUnit(){
+  const num=document.getElementById('u-num').value.trim();if(!num)return;
+  const rent=parseFloat(document.getElementById('u-rent').value)||0;
+  if(editIds.unit!=null){const u=units.find(x=>x.id===editIds.unit);u.num=num;u.rent=rent;editIds.unit=null;}
+  else units.push({id:nextIds.unit++,aid:curAccount,num,rent});
+  closeModal('unit');renderUnits();
+}
+
+// ══ TENANTS ══
+function renderTenants(list){
+  if(!list.length){document.getElementById('tenants-list').innerHTML='<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No tenants yet.</div></div>';return;}
+  document.getElementById('tenants-list').innerHTML=list.map(t=>`
+    <div class="card" style="margin-bottom:8px;" onclick="openProfile(${t.id})">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="min-width:0;flex:1;">
+          <div class="card-title">${t.name}</div>
+          <div class="card-sub">${t.unit} · ${fm(t.rent)}/mo</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px;">
+          ${t.dep>0?`<span class="badge badge-deposit">Dep ${fm(t.dep)}</span>`:''}
+          <span style="color:var(--teal);font-size:18px;">›</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function filterTenants(q){renderTenants(at().filter(t=>t.name.toLowerCase().includes(q.toLowerCase())||t.unit.toLowerCase().includes(q.toLowerCase())));}
+function editTenant(id){
+  const t=tenants.find(x=>x.id===id);editIds.tenant=id;
+  document.getElementById('tenant-modal-title').textContent='Edit Tenant';
+  document.getElementById('t-name').value=t.name;
+  const us=document.getElementById('t-unit');us.innerHTML=au().map(u=>`<option value="${u.num}">${u.num}</option>`).join('');us.value=t.unit;
+  document.getElementById('t-phone').value=t.phone;document.getElementById('t-email').value=t.email;
+  document.getElementById('t-rent').value=t.rent;document.getElementById('t-due').value=t.dueDay;
+  document.getElementById('t-lstart').value=t.lStart;document.getElementById('t-lend').value=t.lEnd;
+  document.getElementById('t-dep').value=t.dep||'';document.getElementById('t-depdate').value=t.depDate||'';
+  openModal('tenant');
+}
+function saveTenant(){
+  const name=document.getElementById('t-name').value.trim(),unit=document.getElementById('t-unit').value;
+  const err=document.getElementById('tenant-form-err');
+  if(!name||!unit){err.style.display='block';return;}err.style.display='none';
+  const d={name,unit,phone:document.getElementById('t-phone').value.trim(),email:document.getElementById('t-email').value.trim(),rent:parseFloat(document.getElementById('t-rent').value)||0,dueDay:parseInt(document.getElementById('t-due').value)||1,lStart:document.getElementById('t-lstart').value,lEnd:document.getElementById('t-lend').value,dep:parseFloat(document.getElementById('t-dep').value)||0,depDate:document.getElementById('t-depdate').value};
+  if(editIds.tenant!=null){const i=tenants.findIndex(t=>t.id===editIds.tenant);tenants[i]={...tenants[i],...d};activity.push({name,unit,action:'Tenant updated',date:today.toLocaleDateString()});}
+  else{tenants.push({id:nextIds.tenant++,aid:curAccount,mtm:false,maint:[],pmts:{},leaseFile:null,...d});activity.push({name,unit,action:'Tenant added',date:today.toLocaleDateString()});}
+  closeModal('tenant');renderTenants(at());
+}
+
+// ══ RENT ══
+function initRentMonthSel(){
+  const s=document.getElementById('rent-month-sel');s.innerHTML='';
+  for(let i=-2;i<=3;i++){
+    const d=new Date(today.getFullYear(),today.getMonth()+i,1);
+    const k=mk(d);const o=document.createElement('option');
+    o.value=k;o.textContent=mlabel(k);if(k===mk(today))o.selected=true;s.appendChild(o);
+  }
+}
+function renderRent(){
+  const k=document.getElementById('rent-month-sel').value||mk(today),ts=at();
+  let col=0,fees=0,unpaid=0;
+  ts.forEach(t=>{if(getP(t,k).status==='paid')col+=t.rent;else{unpaid++;fees+=lateFee(t,k);}});
+  document.getElementById('rent-metrics').innerHTML=`
+    <div class="metric-card"><div class="metric-label">Collected</div><div class="metric-value ok">${fm(col)}</div></div>
+    <div class="metric-card"><div class="metric-label">Unpaid</div><div class="metric-value ${unpaid>0?'danger':'ok'}">${unpaid}</div></div>
+    <div class="metric-card"><div class="metric-label">Late fees</div><div class="metric-value ${fees>0?'danger':'ok'}">$${fees.toFixed(0)}</div></div>
+  `;
+  if(!ts.length){document.getElementById('rent-list').innerHTML='<div class="empty"><div class="empty-icon">💰</div><div class="empty-text">No tenants yet.</div></div>';return;}
+  document.getElementById('rent-list').innerHTML=ts.map(t=>{
+    const p=getP(t,k),fee=p.status==='paid'?0:lateFee(t,k),dl=daysLate(t,k);
+    let pill;
+    if(p.status==='paid') pill=`<span class="day-pill day-pill-green">Paid</span>`;
+    else if(dl<=0) pill=`<span class="day-pill day-pill-green">On time</span>`;
+    else if(dl<=settings.grace) pill=`<span class="day-pill day-pill-yellow">${dl}d late</span>`;
+    else pill=`<span class="day-pill day-pill-red">${dl}d late</span>`;
+    let feeStr='';
+    if(fee>0)feeStr=`<div style="font-size:11px;color:var(--danger);margin-top:2px;">$${settings.flat}+${dl-settings.grace}d×$${settings.daily} = $${fee.toFixed(2)}</div>`;
+    const total=t.rent+fee;
+    const btn=p.status==='paid'?`<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();undoPay(${t.id},'${k}')">Undo</button>`:`<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openPayModal(${t.id},'${k}')">Pay</button>`;
+    return `<div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;min-width:0;">
+          <div class="card-title">${t.name} <span style="font-weight:400;font-size:12px;color:var(--text2);">${t.unit}</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">${pill}</div>
+          ${feeStr}
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:10px;">
+          <div style="font-size:16px;font-weight:700;color:${fee>0?'var(--danger)':'var(--text)'};">$${total.toFixed(2)}</div>
+          <div style="margin-top:4px;">${btn}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function undoPay(id,k){const t=tenants.find(x=>x.id===id);delete t.pmts[k];renderRent();}
+function openPayModal(id,k){
+  const t=tenants.find(x=>x.id===id),fee=lateFee(t,k),total=t.rent+fee;
+  document.getElementById('pay-modal-title').textContent=`Payment — ${t.name}`;
+  document.getElementById('pay-modal-body').innerHTML=`
+    <div style="font-size:16px;font-weight:700;margin-bottom:1rem;">Amount due: $${total.toFixed(2)}${fee>0?` <span style="font-size:13px;color:var(--danger);font-weight:400;">(incl. $${fee.toFixed(2)} late fee)</span>`:''}</div>
+    <div class="section-label">Pay via app</div>
+    ${settings.zelle?`<button class="pay-btn-zelle" onclick="recordPay(${id},'${k}','Zelle');closeModal('payment');">Pay with Zelle<br><span style="font-size:12px;font-weight:400;">${settings.zelle}</span></button>`:''}
+    ${settings.apple?`<button class="pay-btn-apple" onclick="recordPay(${id},'${k}','Apple Cash');closeModal('payment');">Apple Cash<br><span style="font-size:12px;font-weight:400;">${settings.apple}</span></button>`:''}
+    ${!settings.zelle&&!settings.apple?'<div style="color:var(--text2);font-size:13px;margin-bottom:1rem;">Add Zelle/Apple Cash info in Settings → More tab.</div>':''}
+    <div class="section-label">Manual entry</div>
+    <div class="check-row"><input type="checkbox" id="pc-check"><label for="pc-check">Check received</label></div>
+    <input id="pc-note" placeholder="Check # or notes..." style="width:100%;background:var(--light);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:15px;color:var(--text);outline:none;margin:6px 0;" />
+    <div class="check-row"><input type="checkbox" id="pc-cash"><label for="pc-cash">Cash received</label></div>
+    <button class="btn btn-primary btn-full" style="margin-top:10px;" onclick="recordManualPay(${id},'${k}')">Mark as Paid</button>
+  `;
+  openModal('payment');
+}
+function recordPay(id,k,method){const t=tenants.find(x=>x.id===id);t.pmts[k]={status:'paid',method};activity.push({name:t.name,unit:t.unit,action:`Rent paid via ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});renderRent();}
+function recordManualPay(id,k){
+  const t=tenants.find(x=>x.id===id);
+  const method=document.getElementById('pc-check').checked?'Check':document.getElementById('pc-cash').checked?'Cash':'Manual';
+  t.pmts[k]={status:'paid',method};
+  activity.push({name:t.name,unit:t.unit,action:`Rent paid by ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});
+  closeModal('payment');renderRent();
+}
+
+// ══ LEASES ══
+function renderLeases(){
+  const ts=at();
+  if(!ts.length){document.getElementById('leases-list').innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No tenants yet.</div></div>';return;}
+  document.getElementById('leases-list').innerHTML=ts.map(t=>{
+    const s=lStatus(t);
+    let badge,extra='';
+    if(s==='mtm')badge=`<span class="badge badge-mtm">Month-to-month</span>`;
+    else if(s==='active')badge=`<span class="badge badge-active">Active</span>`;
+    else if(s==='expiring'){const d=Math.ceil((new Date(t.lEnd)-today)/864e5);badge=`<span class="badge badge-expiring">Expiring soon</span>`;extra=`<div style="font-size:11px;color:var(--warn);margin-top:3px;">${d} days — ${fd(t.lEnd)}</div>`;}
+    else{badge=`<span class="badge badge-expired">Expired</span>`;extra=`<div style="font-size:11px;color:var(--danger);margin-top:3px;">Expired ${fd(t.lEnd)}</div>`;}
+    return `<div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div><div class="card-title">${t.name}</div><div class="card-sub">${t.unit} · ${fm(t.rent)}/mo</div></div>
+        <div style="text-align:right;">${badge}${extra}</div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">${t.mtm?'Month-to-month (no fixed end)':'Start: '+fd(t.lStart)+' · End: '+fd(t.lEnd)}</div>
+      <div class="toggle-wrap">
+        <label class="ios-toggle"><input type="checkbox" ${t.mtm?'checked':''} onchange="toggleMtm(${t.id})"><span class="ios-slider"></span></label>
+        <span style="font-size:13px;color:var(--text2);">Month-to-month</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleMtm(id){const t=tenants.find(x=>x.id===id);t.mtm=!t.mtm;activity.push({name:t.name,unit:t.unit,action:t.mtm?'Switched to month-to-month':'Restored fixed lease',date:today.toLocaleDateString()});renderLeases();}
+function saveLease(){
+  const tid=document.getElementById('l-tenant').value;if(!tid)return;
+  const t=tenants.find(x=>x.id==tid);
+  t.lStart=document.getElementById('l-start').value;t.lEnd=document.getElementById('l-end').value;t.mtm=false;
+  activity.push({name:t.name,unit:t.unit,action:'Lease updated',date:today.toLocaleDateString()});
+  closeModal('lease');renderLeases();
+}
+
+// ══ CONTRACTORS ══
+const CATS=['All','Handyman','Electrician','Drywall repair','Plumbing','Septic / drain field','Other'];
+const CCAT_C={'Handyman':'#92400E','Electrician':'#1E40AF','Drywall repair':'#374151','Plumbing':'#065F46','Septic / drain field':'#166534','Other':'#3730A3'};
+const CCAT_BG={'Handyman':'#FEF3C7','Electrician':'#DBEAFE','Drywall repair':'#F3F4F6','Plumbing':'#D1FAE5','Septic / drain field':'#DCFCE7','Other':'#EDE9FE'};
+function renderContractors(){
+  document.getElementById('cat-chips').innerHTML=CATS.map(c=>`<div class="cat-chip ${c===selCat?'active':''}" onclick="selCat='${c}';renderContractors();">${c}</div>`).join('');
+  const list=selCat==='All'?contractors:contractors.filter(c=>c.cat===selCat);
+  if(!list.length){document.getElementById('contractors-list').innerHTML='<div class="empty"><div class="empty-icon">🔧</div><div class="empty-text">No contractors yet. Tap + Add.</div></div>';return;}
+  document.getElementById('contractors-list').innerHTML=list.map(c=>`
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div class="card-title">${c.name}</div>
+            <span style="background:${CCAT_BG[c.cat]||'#F3F4F6'};color:${CCAT_C[c.cat]||'#374151'};padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;">${c.cat}</span>
+          </div>
+          ${c.phone?`<div class="card-sub">📞 ${c.phone}</div>`:''}
+          ${c.email?`<div class="card-sub">✉️ ${c.email}</div>`:''}
+          ${c.notes?`<div style="font-size:12px;color:var(--text2);margin-top:4px;">${c.notes}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;margin-left:8px;">
+          <button class="btn btn-outline btn-sm" onclick="editContractor(${c.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="delContractor(${c.id})">Del</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function editContractor(id){
+  const c=contractors.find(x=>x.id===id);editIds.contractor=id;
+  document.getElementById('con-modal-title').textContent='Edit Contractor';
+  document.getElementById('c-name').value=c.name;document.getElementById('c-cat').value=c.cat;
+  document.getElementById('c-phone').value=c.phone;document.getElementById('c-email').value=c.email;
+  document.getElementById('c-notes').value=c.notes;openModal('contractor');
+}
+function saveContractor(){
+  const name=document.getElementById('c-name').value.trim();if(!name)return;
+  const d={name,cat:document.getElementById('c-cat').value,phone:document.getElementById('c-phone').value.trim(),email:document.getElementById('c-email').value.trim(),notes:document.getElementById('c-notes').value.trim()};
+  if(editIds.contractor!=null){const i=contractors.findIndex(c=>c.id===editIds.contractor);contractors[i]={...contractors[i],...d};editIds.contractor=null;}
+  else contractors.push({id:nextIds.contractor++,...d});
+  closeModal('contractor');renderContractors();
+}
+function delContractor(id){if(confirm('Remove?')){contractors=contractors.filter(c=>c.id!==id);renderContractors();}}
+
+// ══ REMINDERS ══
+function generateReminders(){
+  const k=mk(today),ts=at(),nr=[];
+  ts.forEach(t=>{
+    const due=new Date(today.getFullYear(),today.getMonth(),t.dueDay);
+    const du=Math.ceil((due-today)/864e5);
+    if(du>=0&&du<=3)nr.push({type:'rent',msg:`Rent reminder → ${t.name} (${t.unit}): ${fm(t.rent)} due ${fd(due.toISOString().slice(0,10))}.`,to:t.phone,date:today.toLocaleDateString()});
+    t.maint.forEach(m=>{
+      if(m.status==='Scheduled'){const md=new Date(m.date+'T00:00:00');const dum=Math.ceil((md-today)/864e5);
+        if(dum>=0&&dum<=7)nr.push({type:'maint',msg:`Maintenance → ${t.name} (${t.unit}): ${m.type} on ${fd(m.date)}.`,to:t.phone,mto:settings.mphone,date:today.toLocaleDateString()});}
+    });
+  });
+  if(!nr.length)nr.push({type:'info',msg:'No upcoming reminders in the next 7 days.',to:'',date:today.toLocaleDateString()});
+  reminders=[...nr,...reminders].slice(0,50);renderReminders();
+}
+function renderReminders(){
+  const el=document.getElementById('reminders-list');
+  if(!reminders.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;">Tap "Simulate Reminders Now" to preview upcoming alerts.</div>';return;}
+  el.innerHTML=reminders.map(r=>{
+    const bg=r.type==='rent'?'#EFF6FF':r.type==='maint'?'#FFFBEB':'#F0FDF4';
+    const col=r.type==='rent'?'#1E40AF':r.type==='maint'?'#92400E':'#166534';
+    const label=r.type==='rent'?'Rent':r.type==='maint'?'Maintenance':'Info';
+    return `<div class="reminder-card" style="background:${bg};margin-bottom:8px;">
+      <div class="reminder-type" style="color:${col};">${label}</div>
+      <div class="reminder-msg">${r.msg}</div>
+      ${r.to?`<div class="reminder-meta">To: ${r.to}${r.mto?' + '+r.mto:''}</div>`:''}
+      <div class="reminder-meta">${r.date}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ ADMINS ══
+function renderAdmins(){
+  document.getElementById('admins-list').innerHTML=admins.map(a=>`
+    <div class="admin-row">
+      <div><div class="admin-name">${a.name} <span class="badge ${a.role==='Admin'?'badge-active':'badge-mtm'}">${a.role}</span></div><div class="admin-user">@${a.username}</div></div>
+      ${a.username===curUser.username?'<span style="color:var(--teal);font-size:13px;">You</span>':`<button class="btn btn-danger btn-sm" onclick="delAdmin(${a.id})">Remove</button>`}
+    </div>`).join('');
+}
+function saveAdmin(){
+  const name=document.getElementById('ad-name').value.trim();
+  const username=document.getElementById('ad-user').value.trim();
+  const password=document.getElementById('ad-pass').value;
+  const err=document.getElementById('admin-form-err');
+  if(!name||!username||password.length<6||admins.find(a=>a.username===username)){err.style.display='block';return;}
+  err.style.display='none';
+  admins.push({id:nextIds.admin++,name,username,password,role:document.getElementById('ad-role').value});
+  closeModal('admin');renderAdmins();
+}
+function delAdmin(id){if(admins.length<=1){alert('Cannot remove last admin.');return;}if(confirm('Remove?')){admins=admins.filter(a=>a.id!==id);renderAdmins();}}
+
+// ══ SETTINGS ══
+function saveSettings(){
+  settings.grace=parseInt(document.getElementById('s-grace').value)||0;
+  settings.flat=parseFloat(document.getElementById('s-flat').value)||0;
+  settings.daily=parseFloat(document.getElementById('s-daily').value)||0;
+  settings.zelle=document.getElementById('s-zelle').value.trim();
+  settings.apple=document.getElementById('s-apple').value.trim();
+  settings.mname=document.getElementById('s-mname').value.trim();
+  settings.mphone=document.getElementById('s-mphone').value.trim();
+  const el=document.getElementById('settings-saved');el.style.display='block';setTimeout(()=>el.style.display='none',2000);
+}
+
+// ══ PROFILE ══
+function openProfile(id){
+  const t=tenants.find(x=>x.id===id);
+  const totalExp=t.maint.reduce((a,m)=>a+(parseFloat(m.cost)||0),0);
+  document.getElementById('page-profile').innerHTML=`
+    <button class="back-btn" onclick="showPage('tenants',document.querySelector('.bnav-item:nth-child(3)'))">‹ Tenants</button>
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:46px;height:46px;border-radius:50%;background:#DBEAFE;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#1E40AF;flex-shrink:0;">${t.name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase()}</div>
+        <div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:700;">${t.name}</div><div style="font-size:13px;color:var(--text2);">${t.unit} · ${fm(t.rent)}/mo</div></div>
+        <button class="btn btn-outline btn-sm" onclick="editTenant(${t.id})">Edit</button>
+      </div>
+      <div class="ptab-bar">
+        <div class="ptab active" onclick="switchPTab('info',this)">Info</div>
+        <div class="ptab" onclick="switchPTab('lease-doc',this)">Lease</div>
+        <div class="ptab" onclick="switchPTab('payment',this)">Payment</div>
+        <div class="ptab" onclick="switchPTab('maintenance',this)">Maintenance</div>
+        <div class="ptab" onclick="switchPTab('expenses',this)">Expenses</div>
+      </div>
+      <div class="psection active" id="psec-info">
+        ${[['Phone',t.phone],['Email',t.email],['Unit',t.unit],['Rent',fm(t.rent)+'/mo'],['Due day','Day '+t.dueDay],['Lease start',fd(t.lStart)],['Lease end',t.mtm?'Month-to-month':fd(t.lEnd)],['Deposit',t.dep>0?fm(t.dep)+' on '+fd(t.depDate):'None']].map(([k,v])=>`<div class="kv-row"><div class="kv-key">${k}</div><div class="kv-val">${v}</div></div>`).join('')}
+      </div>
+      <div class="psection" id="psec-lease-doc">
+        <div class="section-label">Lease document</div>
+        ${t.leaseFile?`<div class="lease-file-card"><span class="lease-file-name">📄 ${t.leaseFile.name}</span><div style="display:flex;gap:6px;"><button class="btn btn-primary btn-sm" onclick="viewLease(${t.id})">View</button><button class="btn btn-danger btn-sm" onclick="removeLease(${t.id})">Remove</button></div></div>`:`<div class="upload-area" onclick="document.getElementById('lease-input-${t.id}').click()">Tap to upload lease PDF or image</div><input type="file" id="lease-input-${t.id}" accept=".pdf,image/*" style="display:none" onchange="uploadLease(${t.id},this)">`}
+        <div style="font-size:12px;color:var(--text2);margin-top:8px;">Files stored in-browser. Google Drive integration available for permanent storage.</div>
+      </div>
+      <div class="psection" id="psec-payment">
+        <div class="section-label">Pay via app</div>
+        ${settings.zelle?`<button class="pay-btn-zelle">Zelle — ${settings.zelle}</button>`:'<div style="color:var(--text2);font-size:13px;margin-bottom:10px;">Add Zelle info in Settings.</div>'}
+        ${settings.apple?`<button class="pay-btn-apple">Apple Cash — ${settings.apple}</button>`:''}
+        <div class="section-label">Manual entry</div>
+        <div class="check-row"><input type="checkbox" id="pp-check"><label for="pp-check">Check received</label></div>
+        <input id="pp-note" placeholder="Check # or notes..." style="width:100%;background:var(--light);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:15px;color:var(--text);outline:none;margin:6px 0;" />
+        <div class="check-row"><input type="checkbox" id="pp-cash"><label for="pp-cash">Cash received</label></div>
+        <button class="btn btn-primary btn-full" style="margin-top:10px;" onclick="recordProfilePay(${t.id})">Mark Current Month Paid</button>
+      </div>
+      <div class="psection" id="psec-maintenance">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:15px;font-weight:700;">Maintenance & Repairs</div>
+          <button class="btn btn-primary btn-sm" onclick="openMaintModal(${t.id})">+ Add</button>
+        </div>
+        ${t.maint.length===0?'<div class="empty"><div class="empty-icon">🔧</div><div class="empty-text">No maintenance records yet.</div></div>':t.maint.map(m=>`<div class="maint-card"><div class="maint-card-hdr"><span class="badge ${m.status==='Completed'?'badge-active':m.status==='In progress'?'badge-late':'badge-mtm'}">${m.status}</span><span class="maint-card-date">${fd(m.date)}</span></div><div class="maint-card-type">${m.type}</div><div class="maint-card-desc">${m.desc}</div>${m.cost>0?`<div class="maint-card-cost">Cost: ${fm(m.cost)}</div>`:''}</div>`).join('')}
+      </div>
+      <div class="psection" id="psec-expenses">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">Expense Log</div>
+        ${t.maint.filter(m=>m.cost>0).length===0?'<div class="empty"><div class="empty-icon">💸</div><div class="empty-text">No expenses recorded.</div></div>':t.maint.filter(m=>m.cost>0).map(m=>`<div class="exp-row"><div class="exp-date">${fd(m.date)}</div><div style="flex:1;min-width:0;"><div class="exp-type">${m.type}</div><div style="font-size:11px;color:var(--text2);">${m.desc}</div></div><div class="exp-cost">${fm(m.cost)}</div></div>`).join('')}
+        <div style="font-size:14px;font-weight:700;padding-top:10px;margin-top:4px;border-top:1.5px solid var(--border);">Total: <span style="color:var(--danger);">${fm(totalExp)}</span></div>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-profile').classList.add('active');
+}
+function switchPTab(name,el){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.psection').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');document.getElementById('psec-'+name).classList.add('active');
+}
+function recordProfilePay(id){
+  const t=tenants.find(x=>x.id===id),k=mk(today);
+  const method=document.getElementById('pp-check')?.checked?'Check':document.getElementById('pp-cash')?.checked?'Cash':'Manual';
+  t.pmts[k]={status:'paid',method};
+  activity.push({name:t.name,unit:t.unit,action:`Rent paid by ${method} (${mlabel(k)})`,date:today.toLocaleDateString()});
+  alert(`Recorded: ${t.name} paid by ${method}`);
+}
+function uploadLease(id,input){
+  const t=tenants.find(x=>x.id===id),file=input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{t.leaseFile={name:file.name,type:file.type,data:e.target.result};activity.push({name:t.name,unit:t.unit,action:'Lease uploaded',date:today.toLocaleDateString()});openProfile(id);};
+  r.readAsDataURL(file);
+}
+function viewLease(id){
+  const t=tenants.find(x=>x.id===id);if(!t.leaseFile)return;
+  const w=window.open();
+  if(t.leaseFile.type==='application/pdf')w.document.write(`<iframe src="${t.leaseFile.data}" style="width:100%;height:100%;border:none;"></iframe>`);
+  else w.document.write(`<img src="${t.leaseFile.data}" style="max-width:100%;" />`);
+}
+function removeLease(id){const t=tenants.find(x=>x.id===id);t.leaseFile=null;openProfile(id);}
+function openMaintModal(tid){
+  document.getElementById('maint-tid').value=tid;
+  ['maint-date','maint-desc','maint-cost'].forEach(x=>document.getElementById(x).value='');
+  openModal('maint');
+}
+function saveMaint(){
+  const id=parseInt(document.getElementById('maint-tid').value);
+  const t=tenants.find(x=>x.id===id);
+  t.maint.push({id:nextIds.maint++,date:document.getElementById('maint-date').value,type:document.getElementById('maint-type').value,desc:document.getElementById('maint-desc').value.trim(),cost:parseFloat(document.getElementById('maint-cost').value)||0,status:document.getElementById('maint-status').value});
+  activity.push({name:t.name,unit:t.unit,action:'Maintenance record added',date:today.toLocaleDateString()});
+  closeModal('maint');openProfile(id);
+}
+
+function showInstallHelp(){
+  const el=document.getElementById('install-overlay');
+  el.style.display='flex';
+}
+
+// ══ SERVICE WORKER (for PWA install) ══
+if('serviceWorker' in navigator){
+  const sw=`self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline',{headers:{'Content-Type':'text/plain'}}))));`;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
+</body>
+</html>
