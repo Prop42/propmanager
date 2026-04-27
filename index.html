@@ -466,11 +466,23 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'SF Pro
     <div class="modal-handle"></div>
     <div class="modal-hdr"><h3>Update Lease</h3><button class="modal-close" onclick="closeModal('lease')">✕</button></div>
     <div class="modal-body">
-      <div class="form-row"><label>Tenant</label><select id="l-tenant"></select></div>
+      <div class="form-row"><label>Tenant</label><select id="l-tenant" onchange="prefillLeaseDates()"></select></div>
       <div class="form-2col">
         <div class="form-row"><label>Start</label><input id="l-start" type="date" /></div>
         <div class="form-row"><label>End</label><input id="l-end" type="date" /></div>
       </div>
+      <div class="form-row">
+        <label>Lease document (PDF or image)</label>
+        <div id="lease-upload-preview" style="display:none;" class="lease-file-card">
+          <span id="lease-upload-filename" class="lease-file-name">📄 </span>
+          <button class="btn btn-danger btn-sm" onclick="clearLeaseUpload()">Remove</button>
+        </div>
+        <div id="lease-upload-area" class="upload-area" onclick="document.getElementById('l-file-input').click()">
+          Tap to upload lease PDF or image
+        </div>
+        <input type="file" id="l-file-input" accept=".pdf,image/*" style="display:none;" onchange="previewLeaseUpload(this)" />
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">If no new file is selected, any existing lease document is kept.</div>
       <button class="btn btn-primary btn-full" onclick="saveLease()">Save Lease</button>
     </div>
   </div>
@@ -667,7 +679,12 @@ function openModal(id){
   if(id==='lease'){
     const s=document.getElementById('l-tenant');
     s.innerHTML='<option value="">Select...</option>'+at().map(t=>`<option value="${t.id}">${t.name} (${t.unit})</option>`).join('');
-    document.getElementById('l-start').value='';document.getElementById('l-end').value='';
+    document.getElementById('l-start').value='';
+    document.getElementById('l-end').value='';
+    document.getElementById('l-file-input').value='';
+    document.getElementById('lease-upload-preview').style.display='none';
+    document.getElementById('lease-upload-area').style.display='block';
+    window._leaseFileData=null;
   }
   if(id==='unit' && editIds.unit==null){document.getElementById('unit-modal-title').textContent='Add Unit';document.getElementById('u-num').value='';document.getElementById('u-rent').value='';}
   if(id==='contractor'){editIds.contractor=null;document.getElementById('con-modal-title').textContent='Add Contractor';['c-name','c-phone','c-email','c-notes'].forEach(x=>document.getElementById(x).value='');}
@@ -902,19 +919,68 @@ function renderLeases(){
         <div style="text-align:right;">${badge}${extra}</div>
       </div>
       <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">${t.mtm?'Month-to-month (no fixed end)':'Start: '+fd(t.lStart)+' · End: '+fd(t.lEnd)}</div>
-      <div class="toggle-wrap">
-        <label class="ios-toggle"><input type="checkbox" ${t.mtm?'checked':''} onchange="toggleMtm(${t.id})"><span class="ios-slider"></span></label>
-        <span style="font-size:13px;color:var(--text2);">Month-to-month</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <div class="toggle-wrap">
+          <label class="ios-toggle"><input type="checkbox" ${t.mtm?'checked':''} onchange="toggleMtm(${t.id})"><span class="ios-slider"></span></label>
+          <span style="font-size:13px;color:var(--text2);">Month-to-month</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${t.leaseFile
+            ? `<span class="badge badge-active">📄 On file</span>
+               <button class="btn btn-outline btn-sm" onclick="viewLeaseFromList(${t.id})">View</button>`
+            : `<span class="badge badge-vacant">No document</span>`}
+        </div>
       </div>
     </div>`;
   }).join('');
 }
 function toggleMtm(id){const t=tenants.find(x=>x.id===id);t.mtm=!t.mtm;activity.push({name:t.name,unit:t.unit,action:t.mtm?'Switched to month-to-month':'Restored fixed lease',date:today.toLocaleDateString()});saveAll();renderLeases();}
+function prefillLeaseDates(){
+  const tid=document.getElementById('l-tenant').value;
+  if(!tid)return;
+  const t=tenants.find(x=>x.id==tid);
+  if(!t)return;
+  if(t.lStart)document.getElementById('l-start').value=t.lStart;
+  if(t.lEnd)document.getElementById('l-end').value=t.lEnd;
+  // show existing lease file if any
+  if(t.leaseFile){
+    document.getElementById('lease-upload-filename').textContent='📄 '+t.leaseFile.name+' (existing)';
+    document.getElementById('lease-upload-preview').style.display='flex';
+    document.getElementById('lease-upload-area').style.display='none';
+  } else {
+    document.getElementById('lease-upload-preview').style.display='none';
+    document.getElementById('lease-upload-area').style.display='block';
+  }
+}
+function previewLeaseUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    window._leaseFileData={name:file.name,type:file.type,data:e.target.result};
+    document.getElementById('lease-upload-filename').textContent='📄 '+file.name;
+    document.getElementById('lease-upload-preview').style.display='flex';
+    document.getElementById('lease-upload-area').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+function clearLeaseUpload(){
+  window._leaseFileData=null;
+  document.getElementById('l-file-input').value='';
+  document.getElementById('lease-upload-preview').style.display='none';
+  document.getElementById('lease-upload-area').style.display='block';
+}
 function saveLease(){
   const tid=document.getElementById('l-tenant').value;if(!tid)return;
   const t=tenants.find(x=>x.id==tid);
-  t.lStart=document.getElementById('l-start').value;t.lEnd=document.getElementById('l-end').value;t.mtm=false;
-  activity.push({name:t.name,unit:t.unit,action:'Lease updated',date:today.toLocaleDateString()});
+  t.lStart=document.getElementById('l-start').value;
+  t.lEnd=document.getElementById('l-end').value;
+  t.mtm=false;
+  // only update leaseFile if a new one was selected
+  if(window._leaseFileData){
+    t.leaseFile=window._leaseFileData;
+    window._leaseFileData=null;
+  }
+  activity.push({name:t.name,unit:t.unit,action:'Lease updated'+(t.leaseFile?' (with document)':''),date:today.toLocaleDateString()});
   closeModal('lease');saveAll();renderLeases();
 }
 
@@ -1104,6 +1170,15 @@ function viewLease(id){
   else w.document.write(`<img src="${t.leaseFile.data}" style="max-width:100%;" />`);
 }
 function removeLease(id){const t=tenants.find(x=>x.id===id);t.leaseFile=null;saveAll();openProfile(id);}
+function viewLeaseFromList(id){
+  const t=tenants.find(x=>x.id===id);
+  if(!t||!t.leaseFile)return;
+  const w=window.open();
+  if(t.leaseFile.type==='application/pdf')
+    w.document.write(`<iframe src="${t.leaseFile.data}" style="width:100%;height:100%;border:none;"></iframe>`);
+  else
+    w.document.write(`<img src="${t.leaseFile.data}" style="max-width:100%;" />`);
+}
 function openMaintModal(tid){
   document.getElementById('maint-tid').value=tid;
   ['maint-date','maint-desc','maint-cost'].forEach(x=>document.getElementById(x).value='');
