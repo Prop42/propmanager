@@ -670,11 +670,13 @@ function showPage(name,el){
 function openModal(id){
   if(id==='account-switcher')buildAcctSwitcher();
   if(id==='tenant'){
-    editIds.tenant=null;
-    document.getElementById('tenant-modal-title').textContent='Add Tenant';
-    ['t-name','t-phone','t-email','t-rent','t-due','t-lstart','t-lend','t-dep','t-depdate'].forEach(x=>document.getElementById(x).value='');
-    const us=document.getElementById('t-unit');
-    us.innerHTML=au().map(u=>`<option value="${u.num}">${u.num}</option>`).join('');
+    // Only reset fields when adding a NEW tenant (editIds.tenant will be set by editTenant before calling here)
+    if(editIds.tenant==null){
+      document.getElementById('tenant-modal-title').textContent='Add Tenant';
+      ['t-name','t-phone','t-email','t-rent','t-due','t-lstart','t-lend','t-dep','t-depdate'].forEach(x=>document.getElementById(x).value='');
+      const us=document.getElementById('t-unit');
+      us.innerHTML=au().map(u=>`<option value="${u.num}">${u.num}</option>`).join('');
+    }
   }
   if(id==='lease'){
     const s=document.getElementById('l-tenant');
@@ -686,7 +688,11 @@ function openModal(id){
     document.getElementById('lease-upload-area').style.display='block';
     window._leaseFileData=null;
   }
-  if(id==='unit' && editIds.unit==null){document.getElementById('unit-modal-title').textContent='Add Unit';document.getElementById('u-num').value='';document.getElementById('u-rent').value='';}
+  if(id==='unit' && editIds.unit==null){
+    document.getElementById('unit-modal-title').textContent='Add Unit';
+    document.getElementById('u-num').value='';
+    document.getElementById('u-rent').value='';
+  }
   if(id==='contractor'){editIds.contractor=null;document.getElementById('con-modal-title').textContent='Add Contractor';['c-name','c-phone','c-email','c-notes'].forEach(x=>document.getElementById(x).value='');}
   document.getElementById('modal-'+id).classList.add('open');
 }
@@ -752,10 +758,11 @@ function renderUnits(){
 }
 function editUnit(id){
   const u=units.find(x=>x.id===id);
+  if(!u)return;
   editIds.unit=id;
   document.getElementById('unit-modal-title').textContent='Edit Unit';
-  document.getElementById('u-num').value=u.num;
-  document.getElementById('u-rent').value=u.rent;
+  document.getElementById('u-num').value=u.num||'';
+  document.getElementById('u-rent').value=u.rent||'';
   document.getElementById('modal-unit').classList.add('open');
 }
 function saveUnit(){
@@ -803,15 +810,27 @@ function renderTenants(list){
 }
 function filterTenants(q){renderTenants(at().filter(t=>t.name.toLowerCase().includes(q.toLowerCase())||t.unit.toLowerCase().includes(q.toLowerCase())));}
 function editTenant(id){
-  const t=tenants.find(x=>x.id===id);editIds.tenant=id;
+  const t=tenants.find(x=>x.id===id);
+  if(!t)return;
+  // Set editIds FIRST so openModal knows not to clear the fields
+  editIds.tenant=id;
+  // Open the modal shell (won't reset fields because editIds.tenant is set)
+  document.getElementById('modal-tenant').classList.add('open');
+  // Now fill in all the existing data
   document.getElementById('tenant-modal-title').textContent='Edit Tenant';
-  document.getElementById('t-name').value=t.name;
-  const us=document.getElementById('t-unit');us.innerHTML=au().map(u=>`<option value="${u.num}">${u.num}</option>`).join('');us.value=t.unit;
-  document.getElementById('t-phone').value=t.phone;document.getElementById('t-email').value=t.email;
-  document.getElementById('t-rent').value=t.rent;document.getElementById('t-due').value=t.dueDay;
-  document.getElementById('t-lstart').value=t.lStart;document.getElementById('t-lend').value=t.lEnd;
-  document.getElementById('t-dep').value=t.dep||'';document.getElementById('t-depdate').value=t.depDate||'';
-  openModal('tenant');
+  document.getElementById('t-name').value=t.name||'';
+  document.getElementById('t-phone').value=t.phone||'';
+  document.getElementById('t-email').value=t.email||'';
+  document.getElementById('t-rent').value=t.rent||'';
+  document.getElementById('t-due').value=t.dueDay||1;
+  document.getElementById('t-lstart').value=t.lStart||'';
+  document.getElementById('t-lend').value=t.lEnd||'';
+  document.getElementById('t-dep').value=t.dep||'';
+  document.getElementById('t-depdate').value=t.depDate||'';
+  // Populate unit dropdown and select current unit
+  const us=document.getElementById('t-unit');
+  us.innerHTML=au().map(u=>`<option value="${u.num}">${u.num}</option>`).join('');
+  us.value=t.unit;
 }
 function deleteTenant(id){
   const t=tenants.find(x=>x.id===id);
@@ -821,12 +840,31 @@ function deleteTenant(id){
   saveAll();renderTenants(at());
 }
 function saveTenant(){
-  const name=document.getElementById('t-name').value.trim(),unit=document.getElementById('t-unit').value;
+  const name=document.getElementById('t-name').value.trim();
+  const unit=document.getElementById('t-unit').value;
   const err=document.getElementById('tenant-form-err');
-  if(!name||!unit){err.style.display='block';return;}err.style.display='none';
-  const d={name,unit,phone:document.getElementById('t-phone').value.trim(),email:document.getElementById('t-email').value.trim(),rent:parseFloat(document.getElementById('t-rent').value)||0,dueDay:parseInt(document.getElementById('t-due').value)||1,lStart:document.getElementById('t-lstart').value,lEnd:document.getElementById('t-lend').value,dep:parseFloat(document.getElementById('t-dep').value)||0,depDate:document.getElementById('t-depdate').value};
-  if(editIds.tenant!=null){const i=tenants.findIndex(t=>t.id===editIds.tenant);tenants[i]={...tenants[i],...d};activity.push({name,unit,action:'Tenant updated',date:today.toLocaleDateString()});}
-  else{tenants.push({id:nextIds.tenant++,aid:curAccount,mtm:false,maint:[],pmts:{},leaseFile:null,...d});activity.push({name,unit,action:'Tenant added',date:today.toLocaleDateString()});}
+  if(!name||!unit){err.style.display='block';return;}
+  err.style.display='none';
+  const d={
+    name,unit,
+    phone:document.getElementById('t-phone').value.trim(),
+    email:document.getElementById('t-email').value.trim(),
+    rent:parseFloat(document.getElementById('t-rent').value)||0,
+    dueDay:parseInt(document.getElementById('t-due').value)||1,
+    lStart:document.getElementById('t-lstart').value,
+    lEnd:document.getElementById('t-lend').value,
+    dep:parseFloat(document.getElementById('t-dep').value)||0,
+    depDate:document.getElementById('t-depdate').value
+  };
+  if(editIds.tenant!=null){
+    const i=tenants.findIndex(t=>t.id===editIds.tenant);
+    tenants[i]={...tenants[i],...d};
+    activity.push({name,unit,action:'Tenant updated',date:today.toLocaleDateString()});
+  } else {
+    tenants.push({id:nextIds.tenant++,aid:curAccount,mtm:false,maint:[],pmts:{},leaseFile:null,...d});
+    activity.push({name,unit,action:'Tenant added',date:today.toLocaleDateString()});
+  }
+  editIds.tenant=null;
   closeModal('tenant');saveAll();renderTenants(at());
 }
 
